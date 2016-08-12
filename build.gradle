@@ -1,0 +1,166 @@
+group 'net.blissmall'
+version '1.0'
+
+def baseDir = rootDir
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.0.RELEASE")
+    }
+}
+
+buildscript {
+    repositories {
+        maven { url 'http://repo.spring.io/plugins-release' }
+    }
+    dependencies {
+        classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.7'
+    }
+}
+
+allprojects{
+
+    //定义版本号
+    ext {
+        if (project.hasProperty('profile')) {
+            profile = project['profile']
+        } else {
+            profile = "dev"
+        }
+        spring_jdbc_version = '4.3.2.RELEASE'
+        druid_version = '1.0.18'
+        mysql_driver_version = '5.1.30'
+        mybatis_version = '3.3.1'
+        mybatis_mapper_version = '3.3.6'
+        mybatis_pagehelper_version = '4.1.1'
+        mybatis_spring_version = '1.2.4'
+        mybatis_generator_version = '1.3.2'
+        mybatis_boot_version = '1.0.2'
+        guava_version = '19.0'
+        HikariCP_version = '2.4.5'
+        shiro_version = '1.2.4'
+        commons_version = '3.4'
+        commons_io_version = '2.4'
+        commons_codec_version = '1.10'
+        ehcache_version = '2.8.8'
+        httpcomponents_core_version = '4.4.4'
+        httpcomponents_client_version = '4.5.2'
+        xstream_version = '1.4.9'
+    }
+
+    apply plugin: 'java'
+    apply plugin: 'spring-boot'
+    apply plugin: 'idea'
+    apply plugin: 'propdeps'
+
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    configurations{
+        compile.exclude group:"org.springframework.boot",module:"spring-boot-starter-logging"
+// auto config时,datasource需要一个默认实现    ->     实际开发中一般不需要
+//    compile.exclude group:"com.h2database"
+    }
+
+    sourceSets{
+        main{
+            java{
+                srcDir 'src/main/java'
+            }
+            resources{
+                srcDir 'src/main/resources'
+            }
+        }
+    }
+
+    repositories {
+        jcenter()
+        mavenCentral()
+        mavenLocal()
+//        maven {
+//            url 'http://repo.spring.io/plugins-release'
+//        }
+    }
+
+    dependencies {
+        compile fileTree(dir: 'lib', include: '*.jar')
+        compile("org.springframework.boot:spring-boot-starter-web") {
+            exclude module: "spring-boot-starter-tomcat"
+        }
+
+//    使用jetty作为web容器
+        compile("org.springframework.boot:spring-boot-starter-jetty"){
+            exclude group: 'org.eclipse.jetty.websocket'
+        }
+        compile("org.springframework.boot:spring-boot-starter-actuator")
+        compile("org.springframework.boot:spring-boot-starter-validation")
+        compile("org.springframework.boot:spring-boot-starter-jdbc")
+        compile("org.springframework.boot:spring-boot-starter-cache")
+        compile("org.springframework.boot:spring-boot-starter-data-redis")
+//        compile("org.springframework.boot:spring-boot-devtools")
+        compile("org.springframework.boot:spring-boot-starter-aop")
+        compile("org.springframework.boot:spring-boot-starter-thymeleaf")
+//    compile("org.springframework.boot:spring-boot-starter-data-jpa")
+//    compile("org.springframework.boot:spring-boot-starter-mobile")
+//    compile("org.springframework.boot:spring-boot-starter-security")
+//    compile("org.springframework.security.oauth:spring-security-oauth2")
+        compile (
+                "com.google.guava:guava:${guava_version}",
+                "com.zaxxer:HikariCP:${HikariCP_version}",
+                "org.springframework:spring-oxm",
+                "org.springframework.session:spring-session",
+                /* ----------- mybatis ----------- */
+                "org.mybatis:mybatis:${mybatis_version}",
+                "org.mybatis:mybatis-spring:${mybatis_spring_version}",
+                "com.github.pagehelper:pagehelper:${mybatis_pagehelper_version}",
+                "tk.mybatis:mapper:${mybatis_mapper_version}",
+                "org.mybatis.generator:mybatis-generator-core:${mybatis_generator_version}",
+                "com.thoughtworks.xstream:xstream:${xstream_version}"
+
+        )
+        compile ("org.springframework.boot:spring-boot-starter-log4j2")
+        runtime("mysql:mysql-connector-java")
+        optional "org.springframework.boot:spring-boot-configuration-processor"
+
+        testCompile("junit:junit")
+        testCompile('org.springframework.boot:spring-boot-starter-test')
+    }
+
+    idea {
+        module {
+            inheritOutputDirs = false
+            outputDir = file("$baseDir/build/classes/main/")
+        }
+    }
+}
+//  fully executable jars
+springBoot {
+    executable = true
+//    springBoot plugin的唯一入口
+    mainClass = "net.blissmall.puff.PuffBootApplication"
+    backupSource = true
+}
+bootRepackage {
+    excludeDevtools = true
+}
+
+bootRun {
+    addResources = true
+}
+
+dependencies{
+    compile project(':puff-web')
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.9'
+}
+// 显示当前项目下所有用于 compile 的 jar.
+task listJars(description: 'Display all compile jars.') << {
+    configurations.compile.each { File file -> println file.name }
+}

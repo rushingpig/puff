@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.blissmall.puff.service.mapper.user.AppUserAuthsMapper">
+  <resultMap id="BaseResultMap" type="net.blissmall.puff.domain.user.AppUserAuths">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="uuid" jdbcType="VARCHAR" property="uuid" />
+    <result column="auth_id" jdbcType="VARCHAR" property="authId" />
+    <result column="auth_token" jdbcType="VARCHAR" property="authToken" />
+    <result column="auth_expired" jdbcType="VARCHAR" property="authExpired" />
+    <result column="auth_type" jdbcType="CHAR" property="authType" />
+  </resultMap>
+</mapper>

@@ -1,0 +1,12 @@
+dependencies {
+    compile(
+            /*------------ tools -------------*/
+            "org.apache.commons:commons-lang3:${commons_version}",
+            "commons-io:commons-io:${commons_io_version}",
+            "commons-codec:commons-codec:${commons_codec_version}",
+            "commons-beanutils:commons-beanutils",
+            /* ----------- httpcomponents ----------- */
+            "org.apache.httpcomponents:httpcore:${httpcomponents_core_version}",
+            "org.apache.httpcomponents:httpclient:${httpcomponents_client_version}"
+    )
+}

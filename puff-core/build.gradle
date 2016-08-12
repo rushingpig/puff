@@ -1,0 +1,11 @@
+dependencies{
+    compile project(':puff-common')
+    compile(
+            /* ----------- shiro ----------- */
+            "org.apache.shiro:shiro-core:${shiro_version}",
+            "org.apache.shiro:shiro-web:${shiro_version}",
+            "org.apache.shiro:shiro-spring:${shiro_version}",
+            "org.apache.shiro:shiro-ehcache:${shiro_version}",
+            "org.apache.shiro:shiro-cas:${shiro_version}"
+    )
+}

@@ -1,0 +1,29 @@
+
+# mybatis config
+mybatis :
+    typeAliasPackage : net.blissmall.puff.domain
+    mapperLocations : classpath:mapper/*.xml
+    configLocation : classpath:mybatis-config.xml
+
+# shiro config
+shiro :
+    loginUrl : /login
+    successUrl : /success
+    ehcacheConfigLocation : classpath:ehcache-local.xml
+    filterChainDefinitions : /static/** = anon
+                             /login = authc
+                             /logout = logout
+
+    globalSessionTimeout : 1800000
+    sessionValidationInterval : 120000
+    sessionValidationSchedulerEnabled : true
+# internationalization  unit : second
+i18n :
+    messageBaseName : classpath:properties/i18n/messages
+    cacheSeconds : 3600
+
+rest :
+    connectTimeout : 10000
+    readTimeout : 10000
+
+

@@ -1,0 +1,8 @@
+rootProject.name = 'puff'
+include 'puff-common'
+include 'puff-api'
+include 'puff-core'
+include 'puff-web'
+include 'puff-service'
+include 'puff-domain'
+
