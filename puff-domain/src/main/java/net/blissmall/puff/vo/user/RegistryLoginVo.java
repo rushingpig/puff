@@ -39,6 +39,9 @@ public class RegistryLoginVo implements Serializable {
 
     private String ip;
 
+    private AuthType authType;
+
+
     public String getUsername() {
         return username;
     }
@@ -77,5 +80,17 @@ public class RegistryLoginVo implements Serializable {
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    public AuthType getAuthType() {
+        return authType;
+    }
+
+    public void setAuthType(AuthType authType) {
+        this.authType = authType;
+    }
+
+    public enum AuthType{
+        MOBILEPHONE,QQ,WEIXIN;
     }
 }

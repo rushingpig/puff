@@ -26,6 +26,7 @@ package net.blissmall.puff;
               佛祖保佑         永无BUG
 */
 
+import net.blissmall.puff.core.annotation.PuffBootApplication;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
