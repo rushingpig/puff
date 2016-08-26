@@ -146,6 +146,12 @@ allprojects{
         }
     }
 }
+
+subprojects{
+    bootRepackage {
+        enabled = false
+    }
+}
 //  fully executable jars
 springBoot {
     executable = true
@@ -166,7 +172,7 @@ dependencies{
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.9'
+    gradleVersion = '3.0'
 }
 // 显示当前项目下所有用于 compile 的 jar.
 task listJars(description: 'Display all compile jars.') << {
