@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
+ * shiro session的dao
  * @Author : pigo
  * @Date : 16/4/16 下午10:50
  * @E-mail : zhenglin.zhu@xfxb.net

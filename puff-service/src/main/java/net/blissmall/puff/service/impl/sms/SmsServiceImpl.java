@@ -32,7 +32,7 @@ public class SmsServiceImpl extends BaseService implements SmsService {
 
     @Override
     public boolean validateSmsCode(SmsVo smsVo) {
-        String key = getSmsCodeCacheKey(smsVo,namespace);
+        String key = getSmsCodeCacheKey(smsVo);
         String inputCode = smsVo.getCode();
         String cacheCode = stringRedisTemplate.opsForValue().get(key);
         if(StringUtils.isBlank(cacheCode)){
@@ -48,6 +48,12 @@ public class SmsServiceImpl extends BaseService implements SmsService {
     @Override
     public void cacheValidateCode(String key,String code) {
         stringRedisTemplate.opsForValue().set(key,code,validateCodeSessionTimeout, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public long getValidateTimeout(SmsVo smsVo) {
+        String key = getSmsCodeCacheKey(smsVo);
+        return stringRedisTemplate.getExpire(key,TimeUnit.SECONDS);
     }
 
 }

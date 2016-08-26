@@ -11,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
 
@@ -22,7 +21,6 @@ import javax.annotation.Resource;
  * @Since : v1.0
  */
 @Controller
-@RequestMapping("/user")
 public class UserController extends BaseController {
 
     @Resource
@@ -35,7 +33,7 @@ public class UserController extends BaseController {
      * @param model
      * @return
      */
-    @GetMapping("preLogin")
+    @GetMapping("login")
     public String preLogin(@CookieValue(name = PuffNamedConstant.PUFF_COOKIE_NAME,required = false) String puffCookie, Model model){
         if(StringUtils.isNotBlank(puffCookie)){
             String cookie = EncodeUtils.decodeBase64String(puffCookie);

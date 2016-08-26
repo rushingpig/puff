@@ -45,9 +45,12 @@ public class PuffResponseErrorHandler implements ResponseErrorHandler {
     @Override
     public void handleError(ClientHttpResponse clienthttpresponse) throws IOException {
 
+        if(clienthttpresponse == null){
+            logger.error("");
+        }
+
         if (clienthttpresponse.getStatusCode() == HttpStatus.FORBIDDEN) {
             logger.debug(HttpStatus.FORBIDDEN + " response. Throwing authentication exception");
-
         }
     }
 }

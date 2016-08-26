@@ -2,5 +2,6 @@ dependencies{
     compile project(':puff-common')
     compile project(':puff-core')
     compile project(':puff-domain')
+    compile project(':puff-api')
     compile project(':puff-service')
 }

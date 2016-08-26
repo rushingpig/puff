@@ -1,7 +1,5 @@
 package net.blissmall.puff.domain.user;
 
-import net.blissmall.puff.common.utils.JSONUtils;
-
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -91,14 +89,5 @@ public class AppUserAuths implements Serializable{
      */
     public void setAuthType(String authType) {
         this.authType = authType;
-    }
-
-    @Override
-    public String toString() {
-        return JSONUtils.toJsonString(this);
-    }
-
-    public enum AuthType{
-        QQ,WEIXIN,WEIBO,MOBILEPHONE;
     }
 }

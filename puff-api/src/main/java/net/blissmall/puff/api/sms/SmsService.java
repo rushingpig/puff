@@ -19,4 +19,6 @@ public interface SmsService {
 
     void cacheValidateCode(String key,String code);
 
+    long getValidateTimeout(SmsVo smsVo);
+
 }

@@ -53,6 +53,9 @@ public class SmsVo implements Serializable {
         this.smsType = smsType;
     }
 
+    /**
+     * 发送短信的类型
+     */
     public enum SmsType{
         /**
          * 注册

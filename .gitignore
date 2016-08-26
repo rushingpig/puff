@@ -6,3 +6,10 @@ out/
 classes/
 website/
 dump.rdb
+
+puff-web/src/main/resources/static/
+puff-web/src/main/resources/templates/
+
+src/main/resources/generator/generatorConfig.xml
+
+puff-web/logs

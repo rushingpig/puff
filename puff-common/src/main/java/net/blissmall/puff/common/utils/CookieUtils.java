@@ -1,12 +1,11 @@
 package net.blissmall.puff.common.utils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 /**
  * Cookie工具类
@@ -106,5 +105,21 @@ public class CookieUtils {
 			}
 		}
 		return value;
+	}
+
+	/**
+	 * 清除cookie
+	 * @param request
+	 * @param response
+	 * @param name
+	 */
+	public static void clearCookie(HttpServletRequest request,HttpServletResponse response,String name){
+		String cookieValue = getCookie(request,response,name);
+		if(StringUtils.isNotBlank(cookieValue)){
+			Cookie cookie = new Cookie(name,null);
+			cookie.setMaxAge(0);
+			cookie.setPath("/");
+			response.addCookie(cookie);
+		}
 	}
 }

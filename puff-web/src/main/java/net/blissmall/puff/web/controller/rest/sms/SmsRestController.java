@@ -3,7 +3,8 @@ package net.blissmall.puff.web.controller.rest.sms;
 import net.blissmall.puff.api.sms.MultiEnvSmsService;
 import net.blissmall.puff.api.sms.SmsService;
 import net.blissmall.puff.core.validation.group.SendSmsGroup;
-import net.blissmall.puff.vo.response.BaseResponseVo;
+import net.blissmall.puff.service.constant.ErrorStatus;
+import net.blissmall.puff.vo.http.BaseResponseVo;
 import net.blissmall.puff.vo.sms.SmsVo;
 import net.blissmall.puff.web.controller.BaseRestController;
 import org.springframework.validation.BindingResult;
@@ -33,6 +34,10 @@ public class SmsRestController extends BaseRestController {
 
     @PostMapping("")
     public BaseResponseVo restSendSms(@Validated(SendSmsGroup.class) @RequestBody SmsVo smsVo, BindingResult bindingResult, HttpServletResponse response){
+        if(smsService.getValidateTimeout(smsVo) > 0){
+            return bad(ErrorStatus.FREQUENTLY_REQUEST_SMS);
+        }
+
         if(multiEnvSmsService.sendSms(smsVo)){
             return ok();
         }else {

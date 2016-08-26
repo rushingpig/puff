@@ -2,7 +2,7 @@ package net.blissmall.puff.web.core.advice;
 
 import net.blissmall.puff.service.constant.ErrorStatus;
 import net.blissmall.puff.service.exception.BussException;
-import net.blissmall.puff.vo.response.BaseResponseVo;
+import net.blissmall.puff.vo.http.BaseResponseVo;
 import net.blissmall.puff.web.controller.BaseRestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,9 +37,12 @@ public class RestControllerAdvice extends BaseRestController{
     @ResponseBody
     @ResponseStatus(HttpStatus.LENGTH_REQUIRED)
     public BaseResponseVo processRequestParamAndBodyException(Exception e){
+
         if(e instanceof HttpMessageNotReadableException){
+            logger.warn("捕获到 HttpMessageNotReadableException -> ",e);
             return bad(ErrorStatus.INVALID_PARAMS,puffLocaleMessageSourceHolder.getMessage("MISSING_REQUEST_BODY",new Object[]{"body"}));
         }else if(e instanceof MissingServletRequestParameterException){
+            logger.warn("捕获到 MissingServletRequestParameterException -> ",e);
             return bad(ErrorStatus.INVALID_PARAMS,puffLocaleMessageSourceHolder.getMessage("MISSING_REQUEST_PARAM"));
         }else {
             return bad(ErrorStatus.INVALID_PARAMS);
@@ -51,13 +54,15 @@ public class RestControllerAdvice extends BaseRestController{
     @ResponseBody
     @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
     public BaseResponseVo processBussException(BussException e){
-        return restRes(e.getErrorStatus().getCode(),e.getErrorStatus().getMsg(),e);
+        logger.warn("捕获到 BussException -> ",e);
+        return bad(e.getErrorStatus());
     }
 
     @ExceptionHandler
     @ResponseBody
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public BaseResponseVo proccessUnhandleException(HttpServletRequest request, HttpServletResponse response, Exception e){
+        logger.error("捕获到 Exception -> ",e);
         return fail();
     }
 

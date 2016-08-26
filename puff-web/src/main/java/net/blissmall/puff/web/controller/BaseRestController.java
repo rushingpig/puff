@@ -1,12 +1,16 @@
 package net.blissmall.puff.web.controller;
 
+import net.blissmall.puff.common.utils.WebUtils;
+import net.blissmall.puff.domain.user.AppUserAuths;
 import net.blissmall.puff.service.constant.ErrorStatus;
-import net.blissmall.puff.vo.response.BaseResponseVo;
+import net.blissmall.puff.service.constant.PuffNamedConstant;
+import net.blissmall.puff.vo.http.BaseResponseVo;
 import net.blissmall.puff.web.core.holder.PuffLocaleMessageSourceHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 
 /**
  * @Author : zhuzhenglin
@@ -21,9 +25,13 @@ public class BaseRestController {
     @Resource
     protected PuffLocaleMessageSourceHolder puffLocaleMessageSourceHolder;
 
+    protected AppUserAuths getLoginUser(HttpSession session){
+        return WebUtils.getSessionAttribute(session, PuffNamedConstant.USER_SESSION_KEY,AppUserAuths.class);
+    }
 
 
-    private BaseResponseVo restRes(String code,String msg,Object data,Object err){
+
+    protected BaseResponseVo restRes(String code,String msg,Object data,Object err){
         return new BaseResponseVo(code,msg,data,err);
     }
 
@@ -32,25 +40,57 @@ public class BaseRestController {
     }
 
     protected BaseResponseVo restRes(Object data){
-        return new BaseResponseVo(ErrorStatus.EVERYTHIND_IS_OK.getCode(),ErrorStatus.EVERYTHIND_IS_OK.getMsg(),data,null);
+        return new BaseResponseVo(code(ErrorStatus.EVERYTHIND_IS_OK),msg(ErrorStatus.EVERYTHIND_IS_OK),data,null);
+    }
+
+    protected BaseResponseVo data(Object data){
+        return restRes(data);
     }
 
     protected BaseResponseVo ok(){
-        return new BaseResponseVo(ErrorStatus.EVERYTHIND_IS_OK.getCode(),ErrorStatus.EVERYTHIND_IS_OK.getMsg(),null,null);
+        return restRes(code(ErrorStatus.EVERYTHIND_IS_OK),msg(ErrorStatus.EVERYTHIND_IS_OK),null,null);
     }
 
     protected BaseResponseVo fail(){
-        return new BaseResponseVo(ErrorStatus.SERVER_ERROR.getCode(),ErrorStatus.SERVER_ERROR.getMsg(),null,null);
+        return bad(ErrorStatus.SERVER_ERROR);
+    }
+
+    protected BaseResponseVo fail(Object errMsg){
+        return bad(ErrorStatus.SERVER_ERROR,errMsg);
     }
 
     protected BaseResponseVo bad(ErrorStatus errorStatus,Object... dataOrErr){
         if(dataOrErr.length == 0){
-            return restRes(errorStatus.getCode(),errorStatus.getMsg(),null);
+            return restRes(code(errorStatus),msg(errorStatus),null);
         }else if(dataOrErr.length == 1){
-            return restRes(errorStatus.getCode(),errorStatus.getMsg(),dataOrErr[0]);
+            return restRes(code(errorStatus),msg(errorStatus),dataOrErr[0]);
         }else{
-            return restRes(errorStatus.getCode(),errorStatus.getMsg(),null,dataOrErr);
+            return restRes(code(errorStatus),msg(errorStatus),null,dataOrErr);
         }
+    }
+
+    /**
+     * 转换错误状态代码
+     * @param errorStatus
+     * @return
+     */
+    private String code(ErrorStatus errorStatus){
+        if(errorStatus != null){
+            return puffLocaleMessageSourceHolder.getMessage(errorStatus.getCode());
+        }
+        return "";
+    }
+
+    /**
+     * 转换错误状态信息
+     * @param errorStatus
+     * @return
+     */
+    private String msg(ErrorStatus errorStatus){
+        if(errorStatus != null){
+            return puffLocaleMessageSourceHolder.getMessage(errorStatus.getMsg());
+        }
+        return "";
     }
 
 }

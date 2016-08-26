@@ -37,6 +37,8 @@ public class RegistryLoginVo implements Serializable {
             groups = {OverLoginGroup.class,RegistryGroup.class})
     private String imageValidateCode;
 
+    private String ip;
+
     public String getUsername() {
         return username;
     }
@@ -67,5 +69,13 @@ public class RegistryLoginVo implements Serializable {
 
     public void setImageValidateCode(String imageValidateCode) {
         this.imageValidateCode = imageValidateCode;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 }

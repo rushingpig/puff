@@ -1,22 +1,41 @@
 package net.blissmall.puff.service.impl.user;
 
+import com.github.pagehelper.PageHelper;
+import net.blissmall.puff.api.user.UserLogService;
 import net.blissmall.puff.api.user.UserService;
 import net.blissmall.puff.common.utils.CryptoUtils;
 import net.blissmall.puff.common.utils.StringUtils;
 import net.blissmall.puff.common.utils.UUIDUtils;
+import net.blissmall.puff.core.mapper.MyMapper;
 import net.blissmall.puff.domain.user.AppUserAuths;
+import net.blissmall.puff.domain.user.AppUserDeliveryAddress;
+import net.blissmall.puff.domain.user.AppUserFavorites;
+import net.blissmall.puff.domain.user.AppUserProfiles;
 import net.blissmall.puff.service.constant.ErrorStatus;
+import net.blissmall.puff.service.constant.PuffNamedConstant;
 import net.blissmall.puff.service.exception.BussException;
 import net.blissmall.puff.service.impl.BaseService;
 import net.blissmall.puff.service.mapper.user.AppUserAuthsMapper;
+import net.blissmall.puff.service.mapper.user.AppUserDeliveryAddressMapper;
+import net.blissmall.puff.service.mapper.user.AppUserFavoritesMapper;
+import net.blissmall.puff.service.mapper.user.AppUserProfilesMapper;
 import net.blissmall.puff.vo.user.LoginVo;
+import net.blissmall.puff.vo.user.RegistryLoginVo;
 import net.blissmall.puff.vo.user.RegistryVo;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.concurrent.Future;
+
 
 /**
+ * 用户相关的服务操作
  * @Author : zhuzhenglin
  * @Date : 16/8/7 00:07
  * @Email : zhenglin.zhu@xfxb.net
@@ -25,8 +44,25 @@ import javax.annotation.Resource;
 @Service
 public class UserServiceImpl extends BaseService implements UserService {
 
+
+    @Value("${puff.user.overlogin.count}")
+    private Integer overLoginCount;
+
+    @Resource
+    private UserLogService userLogService;
+
     @Resource
     private AppUserAuthsMapper appUserAuthsMapper;
+    @Resource
+    private AppUserProfilesMapper appUserProfilesMapper;
+    @Resource
+    private AppUserFavoritesMapper appUserFavoritesMapper;
+    @Resource
+    private AppUserDeliveryAddressMapper appUserDeliveryAddressMapper;
+    @Resource
+    private RestTemplate restTemplate;
+    @Resource(name = "stringRedisTemplate")
+    StringRedisTemplate redisTemplate;
 
     @Override
     public boolean userExist(String username) {
@@ -36,17 +72,32 @@ public class UserServiceImpl extends BaseService implements UserService {
     }
 
     @Override
-    public boolean addUser(RegistryVo registryVo) {
+    public String addUser(RegistryLoginVo registryLoginVo) {
         AppUserAuths appUserAuths = new AppUserAuths();
-        appUserAuths.setUuid(UUIDUtils.uuid());
-        appUserAuths.setAuthId(registryVo.getUsername());
-        appUserAuths.setAuthToken(CryptoUtils.MD5(registryVo.getPassword()));
-        appUserAuths.setAuthType(AppUserAuths.AuthType.MOBILEPHONE.name());
-        return appUserAuthsMapper.insertSelective(appUserAuths) > 0;
+        String uuid = UUIDUtils.uuid();
+        appUserAuths.setUuid(uuid);
+        appUserAuths.setAuthId(registryLoginVo.getUsername());
+        appUserAuths.setAuthToken(CryptoUtils.MD5(registryLoginVo.getPassword()));
+//        appUserAuths.setAuthType(AppUserAuths.AuthType.MOBILEPHONE.name());
+        appUserAuthsMapper.insertSelective(appUserAuths);
+        return uuid;
     }
 
     @Override
-    public boolean validateLogin(LoginVo loginVo) {
+    @Transactional
+    public String addUserAndInfo(RegistryLoginVo registryLoginVo) {
+        String uuid = addUser(registryLoginVo);
+        AppUserProfiles appUserProfiles = new AppUserProfiles();
+        appUserProfiles.setUuid(uuid);
+        int result = appUserProfilesMapper.insertSelective(appUserProfiles);
+        if(result > 0){
+            return uuid;
+        }
+        return null;
+    }
+
+    @Override
+    public String validateLogin(LoginVo loginVo) {
         AppUserAuths user = new AppUserAuths();
         user.setAuthId(loginVo.getUsername());
         AppUserAuths appUserAuths = getUser(user);
@@ -55,7 +106,14 @@ public class UserServiceImpl extends BaseService implements UserService {
         }
         String inputPassword = loginVo.getPassword();
         String realPassword = appUserAuths.getAuthToken();
-        return StringUtils.equals(CryptoUtils.MD5(inputPassword),realPassword);
+        String uuid = appUserAuths.getUuid();
+        boolean verify = StringUtils.equals(CryptoUtils.MD5(inputPassword),realPassword);
+        if(verify){
+            // 异步记录登录日志
+            Future<Integer> result = userLogService.recordLoginLog(loginVo,appUserAuths.getUuid());
+            return uuid;
+        }
+        return null;
     }
 
     @Override
@@ -64,11 +122,109 @@ public class UserServiceImpl extends BaseService implements UserService {
     }
 
     @Override
+    public AppUserProfiles getUserProfile(AppUserProfiles appUserProfiles) {
+        return appUserProfilesMapper.selectByPrimaryKey(appUserProfiles.getUuid());
+    }
+
+    @Override
     public int changePassword(RegistryVo registryVo) {
         Example example = new Example(AppUserAuths.class);
         AppUserAuths appUserAuths = new AppUserAuths();
         appUserAuths.setAuthToken(CryptoUtils.MD5(registryVo.getPassword()));
-        example.createCriteria().andEqualTo("auth_id",registryVo.getUsername());
+        example.createCriteria().andEqualTo("authId",registryVo.getUsername());
         return appUserAuthsMapper.updateByExampleSelective(appUserAuths,example);
+    }
+
+    @Override
+    public boolean overLogin(LoginVo loginVo) {
+        String loginFailRecordKey = getOverLoginCount(loginVo);
+        String value = redisTemplate.opsForValue().get(loginFailRecordKey);
+        return StringUtils.isNotBlank(value) && Long.valueOf(value) >= overLoginCount;
+    }
+
+    @Override
+    public void recordLoginFailure(LoginVo loginVo) {
+        String loginFailRecordKey = getOverLoginCount(loginVo);
+        redisTemplate.opsForValue().increment(loginFailRecordKey,1);
+    }
+
+
+
+    @Override
+    public int updateUserInfo(AppUserProfiles appUserProfiles) {
+        return appUserProfilesMapper.updateByPrimaryKeySelective(appUserProfiles);
+    }
+
+    @Override
+    public int insertUserInfo(AppUserProfiles appUserProfiles) {
+        return appUserProfilesMapper.insertSelective(appUserProfiles);
+    }
+
+    @Override
+    public List<AppUserFavorites> findAllFavorites(AppUserFavorites appUserFavorites) {
+        Integer lastId = appUserFavorites.getLastId();
+        String uuid = appUserFavorites.getUuid();
+        PageHelper.startPage(0,PuffNamedConstant.FAVORITE_PER_PAGE);
+        PageHelper.orderBy("id desc");
+        if(lastId != null && lastId > 0){
+            Example example = new Example(AppUserFavorites.class);
+            example.createCriteria().andLessThan("id",lastId).andEqualTo("uuid",uuid).andEqualTo("delFlag", MyMapper.DelFlag.VALID.getStatus());
+            return appUserFavoritesMapper.selectByExample(example);
+        }else{
+            return appUserFavoritesMapper.select(appUserFavorites);
+        }
+    }
+
+    @Override
+    public int updateUserFavorites(AppUserFavorites appUserFavorites) {
+        return appUserFavoritesMapper.updateByPrimaryKeySelective(appUserFavorites);
+    }
+
+    @Override
+    public int insertUserFavorites(AppUserFavorites appUserFavorites) {
+        return appUserFavoritesMapper.insertSelective(appUserFavorites);
+    }
+
+    @Override
+    public int addUserDeliveryAddress(AppUserDeliveryAddress appUserDeliveryAddress) {
+        return appUserDeliveryAddressMapper.insertUseGeneratedSelectiveKeys(appUserDeliveryAddress);
+    }
+
+    @Override
+    public List<AppUserDeliveryAddress> findAllDeliveryAddressByUuid(AppUserDeliveryAddress appUserDeliveryAddress) {
+        appUserDeliveryAddress.setDelFlag(MyMapper.DelFlag.VALID.getStatus());
+        return appUserDeliveryAddressMapper.select(appUserDeliveryAddress);
+    }
+
+    @Override
+    public int updateUserDeliveryAddress(AppUserDeliveryAddress appUserDeliveryAddress) {
+        // 防止登录的用户更改自己收货地址的uuid,造成信息错乱
+        appUserDeliveryAddress.setUuid(null);
+        // 不允许更改数据状态
+        appUserDeliveryAddress.setDelFlag(null);
+        int result = appUserDeliveryAddressMapper.updateByPrimaryKeySelective(appUserDeliveryAddress);
+        return result;
+    }
+
+    @Override
+    @Transactional
+    public void defaultDeliveryAddress(Integer deliveryAddressId,String uuid) {
+        // 取消旧的默认收货地址
+        AppUserDeliveryAddress oldAddress = new AppUserDeliveryAddress();
+        oldAddress.setIsDefault(0);
+        Example example = new Example(AppUserDeliveryAddress.class);
+        example.createCriteria().andEqualTo("uuid",uuid).andEqualTo("isDefault",1);
+        appUserDeliveryAddressMapper.updateByExampleSelective(oldAddress,example);
+        // 设置新的默认地址
+        AppUserDeliveryAddress address = new AppUserDeliveryAddress();
+        address.setId(deliveryAddressId);
+        address.setIsDefault(1);
+        appUserDeliveryAddressMapper.updateByPrimaryKeySelective(address);
+    }
+
+    @Override
+    public boolean deliveryAddressOverLimitCount(AppUserDeliveryAddress appUserDeliveryAddress) {
+        appUserDeliveryAddress.setDelFlag(MyMapper.DelFlag.VALID.getStatus());
+        return PuffNamedConstant.DEVLIERY_ADDRESS_LIMIT_COUNT <= appUserDeliveryAddressMapper.selectCount(appUserDeliveryAddress);
     }
 }

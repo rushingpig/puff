@@ -40,7 +40,7 @@ public class RestHttpConfiguration {
         clientHttpRequestFactory.setReadTimeout(readTimeout);
         RestTemplate restTemplate = new RestTemplate(clientHttpRequestFactory);
         restTemplate.setErrorHandler(new PuffResponseErrorHandler());
-        restTemplate.setMessageConverters(SpringMVCConfiguration.wrapMessageConverter());
+        restTemplate.setMessageConverters(PuffMVCConfiguration.wrapMessageConverter());
         return restTemplate;
     }
 

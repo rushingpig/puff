@@ -48,6 +48,7 @@ public class ProSmsServiceImpl extends BaseService implements MultiEnvSmsService
         requestForSmsVo.setParams(params);
         // 将验证码存入redis缓存
         smsService.cacheValidateCode(getSmsCodeCacheKey(smsVo,namespace),code);
+        // 请求发短信服务
         ResponseEntity result = restTemplate.postForEntity(smsHost,requestForSmsVo,String.class);
         if(logger.isDebugEnabled()){
             logger.debug("请求发送短信内容:{}",requestForSmsVo,"\n返回内容:{}",result.getBody());

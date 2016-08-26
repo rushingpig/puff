@@ -50,6 +50,8 @@ allprojects{
         httpcomponents_core_version = '4.4.4'
         httpcomponents_client_version = '4.5.2'
         xstream_version = '1.4.9'
+        thymeleaf_spring_version = '3.0.1.RELEASE'
+        zxing_core_version = "3.2.1"
     }
 
     apply plugin: 'java'
@@ -90,13 +92,13 @@ allprojects{
     dependencies {
         compile fileTree(dir: 'lib', include: '*.jar')
         compile("org.springframework.boot:spring-boot-starter-web") {
-            exclude module: "spring-boot-starter-tomcat"
+//            exclude module: "spring-boot-starter-tomcat"
         }
 
 //    使用jetty作为web容器
-        compile("org.springframework.boot:spring-boot-starter-jetty"){
-            exclude group: 'org.eclipse.jetty.websocket'
-        }
+//        compile("org.springframework.boot:spring-boot-starter-jetty"){
+//            exclude group: 'org.eclipse.jetty.websocket'
+//        }
         compile("org.springframework.boot:spring-boot-starter-actuator")
         compile("org.springframework.boot:spring-boot-starter-validation")
         compile("org.springframework.boot:spring-boot-starter-jdbc")
@@ -104,7 +106,13 @@ allprojects{
         compile("org.springframework.boot:spring-boot-starter-data-redis")
 //        compile("org.springframework.boot:spring-boot-devtools")
         compile("org.springframework.boot:spring-boot-starter-aop")
-        compile("org.springframework.boot:spring-boot-starter-thymeleaf")
+        compile("org.springframework.boot:spring-boot-starter-thymeleaf"){
+            exclude group:"org.thymeleaf",module:"thymeleaf-spring4"
+        }
+        compile("org.thymeleaf:thymeleaf-spring4:${thymeleaf_spring_version}"){
+            exclude group:"org.thymeleaf",module:"thymeleaf"
+        }
+        compile("org.thymeleaf:thymeleaf:${thymeleaf_spring_version}")
 //    compile("org.springframework.boot:spring-boot-starter-data-jpa")
 //    compile("org.springframework.boot:spring-boot-starter-mobile")
 //    compile("org.springframework.boot:spring-boot-starter-security")

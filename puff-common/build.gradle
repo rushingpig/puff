@@ -7,6 +7,9 @@ dependencies {
             "commons-beanutils:commons-beanutils",
             /* ----------- httpcomponents ----------- */
             "org.apache.httpcomponents:httpcore:${httpcomponents_core_version}",
-            "org.apache.httpcomponents:httpclient:${httpcomponents_client_version}"
+            "org.apache.httpcomponents:httpclient:${httpcomponents_client_version}",
+
+            "com.google.zxing:core:${zxing_core_version}",
+            "com.google.zxing:javase:${zxing_core_version}"
     )
 }

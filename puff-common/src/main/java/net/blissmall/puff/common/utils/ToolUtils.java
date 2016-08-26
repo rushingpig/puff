@@ -42,4 +42,29 @@ public class ToolUtils {
     public static String getCacheKey(String keyPrefix,String middle,String suffix,String seperator){
         return new StringBuilder(keyPrefix).append(seperator).append(middle).append(seperator).append(suffix).toString();
     }
+
+    /**
+     * 将IP转换成整型存储到数据库,提高性能(只针对于IP V4)
+     * @param ipStr
+     * @return
+     */
+    public static long ip2Long(String ipStr) {
+        String[] ip = ipStr.split("\\.");
+        return (Long.valueOf(ip[0]) << 24) + (Long.valueOf(ip[1]) << 16)
+                + (Long.valueOf(ip[2]) << 8) + Long.valueOf(ip[3]);
+    }
+
+    /**
+     * 将转换后的整型转换成IP字符串(只针对于IP V4)
+     * @param ipLong
+     * @return
+     */
+    public static String long2Ip(long ipLong) {
+        StringBuilder ip = new StringBuilder();
+        ip.append(ipLong >>> 24).append(".");
+        ip.append((ipLong >>> 16) & 0xFF).append(".");
+        ip.append((ipLong >>> 8) & 0xFF).append(".");
+        ip.append(ipLong & 0xFF);
+        return ip.toString();
+    }
 }
