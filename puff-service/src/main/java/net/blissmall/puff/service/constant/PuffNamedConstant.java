@@ -37,5 +37,9 @@ public class PuffNamedConstant {
      * 用户收藏每页显示条数
      */
     public final static int FAVORITE_PER_PAGE = 4;
+    /**
+     * 用户所属区域
+     */
+    public final static String USER_REGION = "puff.user.region";
 
 }
