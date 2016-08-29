@@ -27,6 +27,7 @@ public class BussProductDetailSpec {
     /**
      * 说明value
      */
+    @Column(name = "`value`")
     private String value;
 
     /**
