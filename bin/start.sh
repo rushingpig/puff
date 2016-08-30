@@ -86,12 +86,11 @@ COUNT=0
 while [ $COUNT -lt 1 ]; do    
     echo -e ".\c"
     sleep 1 
-    COUNT=`ps -f | grep java | grep "${SERVER_NAME}*" | awk '{print $2}' | wc -l`
-    if [ $COUNT -gt 0 ]; then
-        break
-    fi
+	COUNT=`netstat -tln | grep ${SERVER_PORT} | wc -l`
+	if [ ${COUNT} -gt 0 ]; then
+		break
+	fi
 done
 
 echo "OK..."
-PIDS=`ps -ef | grep java | grep "$SERVER_NAME*" | awk '{print $2}'`
-echo "the server started with pid: $PIDS"
+echo "the server started with port ${SERVER_PORT}"
