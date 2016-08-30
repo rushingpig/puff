@@ -34,12 +34,12 @@ cd build/libs
 JAR_IDR=`pwd`
 
 
-SERVER_NAME="puff"
-SERVER_PORT=8888
+SERVER_NAME="puff-blissmall"
+SERVER_PORT=8087
 PROFILE="production"
 
 if [ -z "$SERVER_NAME" ]; then
-	SERVER_NAME=`hostname`"-toast"
+	SERVER_NAME=`hostname`"-puff"
 fi
 
 PIDS=`ps -ef | grep java | grep "${SERVER_NAME}*" | awk '{print $2}'`
@@ -80,7 +80,7 @@ fi
 
 echo -e "Starting the $SERVER_NAME ... \c"
 
-nohup java -jar ${JAVA_OPTS} ${JAVA_MEM_OPTS} toast-0.9.0.jar &
+nohup java -jar ${JAVA_OPTS} ${JAVA_MEM_OPTS} puff-1.0.jar &
 
 COUNT=0
 while [ $COUNT -lt 1 ]; do    
