@@ -21,6 +21,13 @@ function build(){
 	fi
 }
 
+function website_build(){
+    cd ./website
+    git pull --rebase
+    gulp deploy
+    cd ../
+}
+
 cd `dirname $0`
 BIN_DIR=`pwd`
 
@@ -28,6 +35,7 @@ cd ..
 DEPLOY_DIR=`pwd`
 
 repository_update
+website_build
 build
 
 cd build/libs
