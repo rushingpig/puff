@@ -155,7 +155,7 @@ public class PuffMVCConfiguration extends WebMvcConfigurerAdapter implements Emb
         //1.请求参数的打印
 //        registry.addInterceptor(new ParamsInterceptor()).addPathPatterns("/**");
         registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/user/*").excludePathPatterns("/user/exist","/user/login","/user/registry","/user/quickLogin");
-        registry.addInterceptor(new RegionInterceptor()).addPathPatterns("/product/*");
+        registry.addInterceptor(new RegionInterceptor()).addPathPatterns("/category/*", "/product/*");
         super.addInterceptors(registry);
     }
 

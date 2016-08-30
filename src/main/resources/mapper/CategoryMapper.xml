@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.blissmall.puff.service.mapper.category.CategoryMapper">
+
+  <select id="getProductList" resultType="net.blissmall.puff.vo.product.ProductVo">
+    select bp.id as `bussProduct.id`,bp.name as `bussProduct.name`,
+    min(bps.price) as `bussProductSku.price`,bps.id as `bussProductSku.id`,
+    bpd.list_img as `bussProductDetail.listImg`,bpd.list_copy as `bussProductDetail.listCopy`
+    from buss_product bp join buss_product_sku bps
+    on bp.id = bps.product_id and bp.del_flag = 1 and bps.del_flag = 1 and bp.category_id = #{categoryId} and bps.regionalism_id = #{regionalismId}
+    join buss_product_detail bpd on bp.id = bpd.product_id and bpd.del_flag = 1 and bpd.regionalism_id = #{regionalismId}
+    group by bp.id
+  </select>
+
+</mapper>
