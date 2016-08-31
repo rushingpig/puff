@@ -21,13 +21,6 @@ function build(){
 	fi
 }
 
-function website_build(){
-    cd ./website
-    git pull --rebase
-    gulp deploy
-    cd ../
-}
-
 cd `dirname $0`
 BIN_DIR=`pwd`
 
@@ -35,12 +28,17 @@ cd ..
 DEPLOY_DIR=`pwd`
 
 repository_update
-website_build
+
+# 调用website的deploy
+WEBSITE_DIR=${DEPLOY_DIR}/website
+cd ${WEBSITE_DIR}
+/bin/bash ./deploy.sh
+cd ${DEPLOY_DIR}
+
 build
 
 cd build/libs
 JAR_IDR=`pwd`
-
 
 SERVER_NAME="puff-blissmall"
 SERVER_PORT=8087
