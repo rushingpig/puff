@@ -5,7 +5,6 @@ function repository_update(){
 	GIT=`which git`
 	git stash
 	git pull --rebase
-	git stash pop	
 	if [ $? -gt 0 ]; then
 		echo "when to update the repository failed..."
 		exit 1
