@@ -7,7 +7,7 @@
     min(bps.price) as `bussProductSku.price`,bps.id as `bussProductSku.id`,
     bpd.list_img as `bussProductDetail.listImg`,bpd.list_copy as `bussProductDetail.listCopy`
     from buss_product bp join buss_product_sku bps
-    on bp.id = bps.product_id and bp.del_flag = 1 and bps.del_flag = 1 and bp.category_id = #{categoryId} and bps.regionalism_id = #{regionalismId}
+    on bp.id = bps.product_id and bp.del_flag = 1 and bps.del_flag = 1 and bps.website = 1 and bp.category_id = #{categoryId} and bps.regionalism_id = #{regionalismId}
     join buss_product_detail bpd on bp.id = bpd.product_id and bpd.del_flag = 1 and bpd.regionalism_id = #{regionalismId}
     group by bp.id
   </select>
