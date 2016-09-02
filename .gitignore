@@ -10,6 +10,6 @@ dump.rdb
 src/main/resources/static/
 src/main/resources/templates/
 
-src/main/resources/generator/generatorConfig.xml
+src/main/resources/generatorConfig.xml
 
-puff-web/logs
+/logs
