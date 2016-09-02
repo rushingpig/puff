@@ -1,10 +1,11 @@
 package net.blissmall.puff.domain.product;
 
-import java.util.Date;
 import javax.persistence.*;
+import java.util.Date;
 
 @Table(name = "buss_product_sku")
 public class BussProductSku {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

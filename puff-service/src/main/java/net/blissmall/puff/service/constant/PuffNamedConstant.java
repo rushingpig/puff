@@ -41,5 +41,9 @@ public class PuffNamedConstant {
      * 用户所属区域
      */
     public final static String USER_REGION = "puff.user.region";
+    /**
+     * 购物车
+     */
+    public final static String USER_CART = "puff.user.cart";
 
 }

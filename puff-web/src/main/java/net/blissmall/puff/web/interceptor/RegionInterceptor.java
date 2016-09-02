@@ -18,18 +18,20 @@ public class RegionInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        System.out.println("prehandle-----------------------------------");
         DictRegionalism userRegion = WebUtils.getSessionAttribute(request.getSession(), PuffNamedConstant.USER_REGION, DictRegionalism.class);
         //设置所属区域
         if (userRegion == null) {
+            System.out.println("------------------region interceptor-----------------");
             String ip = request.getRemoteAddr();
             String info = IpUtils.getRegionInfoByIp(BROWNIE_IP_URL, ip);
+            System.out.println(info);
+//            需要转换成数据库对应区域名称和id
+//            如不能转换则按照一定策略设置默认区域
 //            IpDict ipDict = new JSONUtils().fromJson(info, IpDict.class);
             userRegion = new DictRegionalism();
             userRegion.setId(440300);
             userRegion.setName("深圳");
-            WebUtils.setSessionAttribute(request.getSession(), PuffNamedConstant.USER_REGION, userRegion);
-            System.out.println(info);
+            request.getSession().setAttribute(PuffNamedConstant.USER_REGION, userRegion);
         }
         return true;
     }

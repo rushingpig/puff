@@ -22,14 +22,10 @@ public class WebUtils extends org.springframework.web.util.WebUtils {
         return (T) session.getAttribute(key);
     }
 
-    public static void setSessionAttribute(HttpSession session,String key,Object value){
-        session.setAttribute(key, value);
-    }
-
     /**
      * 获取发送rest get请求时的uri
      * @param httpUrl
-     * @param map
+     * @param queryParams
      * @return
      */
     public static URI getRestQueryURI(String httpUrl, Map<String,?> queryParams){

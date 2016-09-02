@@ -1,4 +1,4 @@
-package net.blissmall.puff.web.controller.form;
+package net.blissmall.puff.web.controller.form.product;
 
 import net.blissmall.puff.api.product.ProductDetailService;
 import net.blissmall.puff.api.product.ProductDetailSpecService;
