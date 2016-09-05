@@ -10,6 +10,7 @@ import net.blissmall.puff.vo.user.RegistryLoginVo;
 import net.blissmall.puff.vo.user.RegistryVo;
 import org.springframework.validation.annotation.Validated;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -156,5 +157,12 @@ public interface UserService {
      * @return
      */
     boolean deliveryAddressOverLimitCount(AppUserDeliveryAddress appUserDeliveryAddress);
+
+    /**
+     * 用户是否已登录
+     * @param session
+     * @return
+     */
+    boolean userLogin(HttpSession session);
 
 }

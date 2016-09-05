@@ -30,6 +30,7 @@ import org.springframework.web.client.RestTemplate;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -226,5 +227,13 @@ public class UserServiceImpl extends BaseService implements UserService {
     public boolean deliveryAddressOverLimitCount(AppUserDeliveryAddress appUserDeliveryAddress) {
         appUserDeliveryAddress.setDelFlag(MyMapper.DelFlag.VALID.getStatus());
         return PuffNamedConstant.DEVLIERY_ADDRESS_LIMIT_COUNT <= appUserDeliveryAddressMapper.selectCount(appUserDeliveryAddress);
+    }
+
+    @Override
+    public boolean userLogin(HttpSession session) {
+        if(session.getAttribute(PuffNamedConstant.USER_SESSION_KEY) != null){
+            return true;
+        }
+        return false;
     }
 }
