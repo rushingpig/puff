@@ -1,0 +1,13 @@
+ext {
+    log4j2Level = "INFO"
+}
+
+def profiles = 'dev'
+
+processResources {
+    filesMatching('**/log4j2.xml') {
+        filter {
+            it.replace('#log4j2.level#', log4j2Level)
+        }
+    }
+}
