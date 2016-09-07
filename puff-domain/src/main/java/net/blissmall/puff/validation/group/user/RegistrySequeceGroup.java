@@ -1,7 +1,7 @@
-package net.blissmall.puff.core.validation.group.user;
+package net.blissmall.puff.validation.group.user;
 
-import net.blissmall.puff.core.validation.group.FirstGroup;
-import net.blissmall.puff.core.validation.group.SecondGroup;
+import net.blissmall.puff.validation.group.FirstGroup;
+import net.blissmall.puff.validation.group.SecondGroup;
 
 import javax.validation.GroupSequence;
 

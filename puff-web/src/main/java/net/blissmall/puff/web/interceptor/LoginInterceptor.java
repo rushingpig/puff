@@ -6,11 +6,16 @@ import net.blissmall.puff.common.utils.WebUtils;
 import net.blissmall.puff.domain.user.AppUserAuths;
 import net.blissmall.puff.service.constant.ErrorStatus;
 import net.blissmall.puff.service.constant.PuffNamedConstant;
+import net.blissmall.puff.vo.http.BaseResponseVo;
 import net.blissmall.puff.web.controller.BaseRestController;
+import net.blissmall.puff.web.core.holder.PuffLocaleMessageSourceHolder;
+import org.apache.commons.io.Charsets;
 import org.apache.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -22,6 +27,9 @@ import javax.servlet.http.HttpServletResponse;
  * @Since : v1.0
  */
 public class LoginInterceptor extends BaseRestController implements HandlerInterceptor {
+
+    @Resource
+    private PuffLocaleMessageSourceHolder puffLocaleMessageSourceHolder;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -35,11 +43,17 @@ public class LoginInterceptor extends BaseRestController implements HandlerInter
             if(ServletUtils.isAjaxRequest(request)){
                 logger.warn("此次ajax请求:::{}未授权,需要登录",request.getRequestedSessionId());
                 response.setStatus(HttpStatus.SC_UNAUTHORIZED);
-                response.getWriter().write(JSONUtils.toJsonString(bad(ErrorStatus.NO_AUTHORIZED_REQUEST)));
+                BaseResponseVo baseResponseVo = restRes(code(ErrorStatus.NO_AUTHORIZED_REQUEST,puffLocaleMessageSourceHolder),msg(ErrorStatus.NO_AUTHORIZED_REQUEST,puffLocaleMessageSourceHolder),null);
+                response.setCharacterEncoding(Charsets.UTF_8.name());
+                // 必须要加上content-type，否则容易产生乱码
+                response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
+                String resStr =JSONUtils.toJsonString(baseResponseVo);
+                response.getWriter().write(resStr);
+                response.getWriter().close();
             }else{
             // pc端
                 logger.warn("此次请求:::{}未授权,需要登录",request.getRequestedSessionId());
-                request.getRequestDispatcher("/login").forward(request,response);
+                response.sendRedirect(contextPath + "/login");
             }
             return false;
         }
@@ -52,5 +66,6 @@ public class LoginInterceptor extends BaseRestController implements HandlerInter
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        response.setCharacterEncoding(Charsets.UTF_8.name());
     }
 }

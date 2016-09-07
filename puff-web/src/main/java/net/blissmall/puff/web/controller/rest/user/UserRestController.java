@@ -5,7 +5,7 @@ import net.blissmall.puff.api.sms.SmsService;
 import net.blissmall.puff.api.user.UserService;
 import net.blissmall.puff.common.utils.*;
 import net.blissmall.puff.core.mapper.MyMapper;
-import net.blissmall.puff.core.validation.group.user.*;
+import net.blissmall.puff.validation.group.user.*;
 import net.blissmall.puff.domain.user.AppUserAuths;
 import net.blissmall.puff.domain.user.AppUserDeliveryAddress;
 import net.blissmall.puff.domain.user.AppUserFavorites;
@@ -174,10 +174,10 @@ public class UserRestController extends BaseRestController {
         }
         AppUserAuths appUserAuths = new AppUserAuths();
         appUserAuths.setAuthId(loginVo.getUsername());
-//        loginVo.setIp(ServletUtils.getRequestIP(request));
-        loginVo.setIp("120.234.2.50");
+        loginVo.setIp(ServletUtils.getRequestIP(request));
         String uuid = userService.validateLogin(loginVo);
-        if(StringUtils.isNotBlank(uuid)){
+       if(StringUtils.isNotBlank(uuid)){
+            appUserAuths.setUuid(uuid);
             // 写入cookie,实现自动登录
             writeSessionAndCookie(loginVo,appUserAuths,session,response);
             return ok();
@@ -200,7 +200,7 @@ public class UserRestController extends BaseRestController {
     @PostMapping("quickLogin")
     public BaseResponseVo quickLogin(@Validated({QuickLoginGroup.class}) @RequestBody LoginVo loginVo, BindingResult bindingResult, HttpServletResponse response,HttpSession session){
         Map<String,Boolean> userInfoMap = Maps.newHashMap();
-        if(smsService.validateSmsCode(parseLoginVo2SmsVo(loginVo,SmsVo.SmsType.QUIDK_LOGIN))){
+        if(smsService.validateSmsCode(parseLoginVo2SmsVo(loginVo,SmsVo.SmsType.QUICK_LOGIN))){
 
             AppUserAuths appUserAuths = new AppUserAuths();
             appUserAuths.setAuthId(loginVo.getUsername());
@@ -238,6 +238,19 @@ public class UserRestController extends BaseRestController {
         return ok();
     }
 
+    @PostMapping("preReset")
+    public BaseResponseVo preReset(@Validated({QuickLoginGroup.class}) @RequestBody LoginVo loginVo, BindingResult bindingResult, HttpServletResponse response,HttpSession session){
+        if(!userService.userExist(loginVo.getUsername())){
+            return bad(ErrorStatus.USER_NOT_EXIST);
+        }
+        boolean authed = smsService.validateSmsCode(parseLoginVo2SmsVo(loginVo,SmsVo.SmsType.RESET_PASSWORD));
+        if(!authed){
+            return bad(ErrorStatus.ERROR_SMS_VALIDATE_CODE);
+        }else{
+            return ok();
+        }
+    }
+
     /**
      * 重置/初始化 用户登录密码
      * @param registryVo
@@ -260,10 +273,11 @@ public class UserRestController extends BaseRestController {
         return ok();
     }
 
-    @GetMapping("{uuid}")
-    public BaseResponseVo userInfo(@PathVariable String uuid){
+    @GetMapping("userInfo")
+    public BaseResponseVo userInfo(HttpSession session){
         AppUserProfiles appUserProfiles = new AppUserProfiles();
-        appUserProfiles.setUuid(uuid);
+        String sessionUUID = getLoginUser(session).getUuid();
+        appUserProfiles.setUuid(sessionUUID);
         AppUserProfiles user = userService.getUserProfile(appUserProfiles);
         return data(user);
     }
@@ -275,27 +289,19 @@ public class UserRestController extends BaseRestController {
      * @param response
      * @return
      */
-    @PutMapping("{uuid}")
-    public BaseResponseVo updateUserInfo(@PathVariable String uuid,@RequestBody AppUserProfiles appUserProfiles,BindingResult bindingResult,HttpServletResponse response,HttpSession session){
+    @PutMapping("userInfo")
+    public BaseResponseVo updateUserInfo(@RequestBody AppUserProfiles appUserProfiles,BindingResult bindingResult,HttpServletResponse response,HttpSession session){
         String sessionUUID = getLoginUser(session).getUuid();
-        if(StringUtils.isNotBlank(uuid)){
-            appUserProfiles.setUuid(uuid);
-        }else {
-            appUserProfiles.setUuid(sessionUUID);
-        }
+        appUserProfiles.setUuid(sessionUUID);
         userService.updateUserInfo(appUserProfiles);
         return ok();
     }
 
-    @GetMapping("{uuid}/favorites")
-    public BaseResponseVo listFavorites(@PathVariable String uuid,@RequestParam(value = "last_id",required = false) Integer lastId,HttpSession session){
+    @GetMapping("favorites")
+    public BaseResponseVo listFavorites(@RequestParam(value = "last_id",required = false) Integer lastId,HttpSession session){
         AppUserFavorites appUserFavorites = new AppUserFavorites();
         String sessionUUID = getLoginUser(session).getUuid();
-        if(StringUtils.isNotBlank(uuid)){
-            appUserFavorites.setUuid(uuid);
-        }else {
-            appUserFavorites.setUuid(sessionUUID);
-        }
+        appUserFavorites.setUuid(sessionUUID);
         appUserFavorites.setLastId(lastId);
         List<AppUserFavorites> list = userService.findAllFavorites(appUserFavorites);
         if(list.isEmpty()){
@@ -343,7 +349,7 @@ public class UserRestController extends BaseRestController {
      * @param appUserDeliveryAddress
      * @return
      */
-    @GetMapping("{uuid}/deliveryAddresses")
+    @GetMapping("deliveryAddresses")
     public BaseResponseVo listDeliveryAddresses(@PathVariable String uuid){
         AppUserDeliveryAddress appUserDeliveryAddress = new AppUserDeliveryAddress();
         appUserDeliveryAddress.setUuid(uuid);

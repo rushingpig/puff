@@ -2,7 +2,7 @@ package net.blissmall.puff.web.controller.rest.sms;
 
 import net.blissmall.puff.api.sms.MultiEnvSmsService;
 import net.blissmall.puff.api.sms.SmsService;
-import net.blissmall.puff.core.validation.group.SendSmsGroup;
+import net.blissmall.puff.validation.group.SendSmsGroup;
 import net.blissmall.puff.service.constant.ErrorStatus;
 import net.blissmall.puff.vo.http.BaseResponseVo;
 import net.blissmall.puff.vo.sms.SmsVo;

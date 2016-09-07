@@ -88,7 +88,7 @@ echo -e "Starting the $SERVER_NAME ... \c"
 nohup java -jar ${JAVA_OPTS} ${JAVA_MEM_OPTS} puff-1.0.jar &
 
 COUNT=0
-while [ $COUNT -lt 1 ]; do    
+while [ ${COUNT} -lt 1 ]; do
     echo -e ".\c"
     sleep 1 
 	COUNT=`netstat -tln | grep ${SERVER_PORT} | wc -l`

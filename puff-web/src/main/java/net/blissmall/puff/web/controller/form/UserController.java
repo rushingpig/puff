@@ -61,8 +61,9 @@ public class UserController extends BaseController {
             return "redirect:/";
         }else {
             model.addAttribute("errMsg",messageSourceHolder.getMessage("EXPIRED_COOKIE"));
-            return "login";
+            return "auth-test";
         }
     }
+
 
 }

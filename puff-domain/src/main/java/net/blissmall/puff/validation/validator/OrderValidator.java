@@ -1,6 +1,6 @@
-package net.blissmall.puff.core.validation.validator;
+package net.blissmall.puff.validation.validator;
 
-import net.blissmall.puff.core.validation.annotation.IsOrder;
+import net.blissmall.puff.validation.annotation.IsOrder;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

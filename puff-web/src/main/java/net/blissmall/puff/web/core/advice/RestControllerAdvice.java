@@ -1,5 +1,6 @@
 package net.blissmall.puff.web.core.advice;
 
+import net.blissmall.puff.domain.user.AppUserAuths;
 import net.blissmall.puff.service.constant.ErrorStatus;
 import net.blissmall.puff.service.exception.BussException;
 import net.blissmall.puff.vo.http.BaseResponseVo;
@@ -7,6 +8,7 @@ import net.blissmall.puff.web.controller.BaseRestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolationException;
 
 /**
@@ -25,13 +28,31 @@ import javax.validation.ConstraintViolationException;
 @ControllerAdvice(annotations = {RestController.class})
 public class RestControllerAdvice extends BaseRestController{
 
+    @ModelAttribute
+    public String getUuid(HttpSession session){
+        AppUserAuths sessionUser = getLoginUser(session);
+        if(sessionUser == null){
+            return "";
+        }
+        return sessionUser.getUuid();
+    }
 
+    /**
+     * 参数校验的异常处理(主要是来源于service层)
+     * @param e
+     * @return
+     */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity processValidationException(ConstraintViolationException e){
         String message = e.getConstraintViolations().iterator().next().getMessage();
         return new ResponseEntity(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * 请求消息体或者请求参数异常处理
+     * @param e
+     * @return
+     */
     @ExceptionHandler({HttpMessageNotReadableException.class,
             MissingServletRequestParameterException.class})
     @ResponseBody
@@ -40,7 +61,7 @@ public class RestControllerAdvice extends BaseRestController{
 
         if(e instanceof HttpMessageNotReadableException){
             logger.warn("捕获到 HttpMessageNotReadableException -> ",e);
-            return bad(ErrorStatus.INVALID_PARAMS,puffLocaleMessageSourceHolder.getMessage("MISSING_REQUEST_BODY",new Object[]{"body"}));
+            return bad(ErrorStatus.INVALID_PARAMS,puffLocaleMessageSourceHolder.getMessage("MISSING_REQUEST_BODY",new Object[]{"body","body"}));
         }else if(e instanceof MissingServletRequestParameterException){
             logger.warn("捕获到 MissingServletRequestParameterException -> ",e);
             return bad(ErrorStatus.INVALID_PARAMS,puffLocaleMessageSourceHolder.getMessage("MISSING_REQUEST_PARAM"));
@@ -49,7 +70,24 @@ public class RestControllerAdvice extends BaseRestController{
         }
     }
 
+    /**
+     * 请求的content-tyep或者accept不被支持
+     * @param e
+     * @return
+     */
+    @ExceptionHandler({HttpMediaTypeNotSupportedException.class})
+    @ResponseBody
+    @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+    public BaseResponseVo processRequestParamAndBodyException(HttpMediaTypeNotSupportedException e){
+        logger.warn("捕获到 HttpMediaTypeNotSupportedException -> ",e);
+        return bad(ErrorStatus.UNSUPPORTED_MEDIA_TYPE);
+    }
 
+    /**
+     * 所有的业务异常
+     * @param e
+     * @return
+     */
     @ExceptionHandler(BussException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
@@ -58,6 +96,13 @@ public class RestControllerAdvice extends BaseRestController{
         return bad(e.getErrorStatus());
     }
 
+    /**
+     * 服务器内部异常
+     * @param request
+     * @param response
+     * @param e
+     * @return
+     */
     @ExceptionHandler
     @ResponseBody
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -66,6 +111,11 @@ public class RestControllerAdvice extends BaseRestController{
         return fail();
     }
 
+    /**
+     * 找不到相应的路由异常
+     * @param ex
+     * @return
+     */
     @ExceptionHandler(NoHandlerFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody

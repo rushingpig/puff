@@ -40,7 +40,7 @@ public class ZxingUtils {
                     BarcodeFormat.EAN_13, codeWidth, height, null);
 
             MatrixToImageWriter
-                    .writeToFile(bitMatrix, "png", new File(imgPath));
+                    .writeToPath(bitMatrix, "png", new File(imgPath).toPath());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -91,7 +91,7 @@ public class ZxingUtils {
                     BarcodeFormat.QR_CODE, width, height, hints);
 
             MatrixToImageWriter
-                    .writeToFile(bitMatrix, "png", new File(imgPath));
+                    .writeToPath(bitMatrix, "png", new File(imgPath).toPath());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -115,7 +115,7 @@ public class ZxingUtils {
             LuminanceSource source = new BufferedImageLuminanceSource(image);
             BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
 
-            Hashtable<DecodeHintType, Object> hints = new Hashtable<DecodeHintType, Object>();
+            Hashtable<DecodeHintType, Object> hints = new Hashtable<>();
             hints.put(DecodeHintType.CHARACTER_SET, "GBK");
 
             result = new MultiFormatReader().decode(bitmap, hints);

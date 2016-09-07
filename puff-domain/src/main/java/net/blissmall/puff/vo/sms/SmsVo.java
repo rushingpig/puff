@@ -1,7 +1,7 @@
 package net.blissmall.puff.vo.sms;
 
-import net.blissmall.puff.core.validation.group.SendSmsGroup;
-import net.blissmall.puff.core.validation.group.user.ValidateCodeGroup;
+import net.blissmall.puff.validation.group.SendSmsGroup;
+import net.blissmall.puff.validation.group.user.ValidateCodeGroup;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
@@ -23,6 +23,8 @@ public class SmsVo implements Serializable {
     private String phoneNum;
     @NotNull(message = "{NotBlank.SmsVo.smsType}",
             groups = {SendSmsGroup.class, ValidateCodeGroup.class})
+    @net.blissmall.puff.validation.annotation.SmsType(message = "{SmsType.SmsVo.smsType}",
+            groups = {SendSmsGroup.class})
     private SmsType smsType;
 
     @Length(min = 4,message = "{Length.SmsVo.code}",
@@ -64,7 +66,7 @@ public class SmsVo implements Serializable {
         /**
          * 快速登录
          */
-        QUIDK_LOGIN,
+        QUICK_LOGIN,
         /**
          * 重置密码
          */

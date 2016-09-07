@@ -145,6 +145,11 @@ public class PuffMVCConfiguration extends WebMvcConfigurerAdapter implements Emb
 //        configurer.setUseSuffixPatternMatch(false).setUseTrailingSlashMatch(true);
 //    }
 
+    @Bean
+    public LoginInterceptor loginInterceptor(){
+        return new LoginInterceptor();
+    }
+
     /**
      * 添加自定义的拦截器
      *
@@ -154,7 +159,7 @@ public class PuffMVCConfiguration extends WebMvcConfigurerAdapter implements Emb
     public void addInterceptors(InterceptorRegistry registry) {
         //1.请求参数的打印
 //        registry.addInterceptor(new ParamsInterceptor()).addPathPatterns("/**");
-        registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/user/*").excludePathPatterns("/user/exist","/user/login","/user/registry","/user/quickLogin");
+        registry.addInterceptor(loginInterceptor()).addPathPatterns("/user/*").excludePathPatterns("/user/exist","/user/login","/user/registry","/user/quickLogin");
         registry.addInterceptor(new RegionInterceptor()).addPathPatterns("/category/*", "/product/*");
         super.addInterceptors(registry);
     }

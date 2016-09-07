@@ -74,7 +74,7 @@ public class BaseRestController {
      * @param errorStatus
      * @return
      */
-    private String code(ErrorStatus errorStatus){
+    protected String code(ErrorStatus errorStatus){
         if(errorStatus != null){
             return puffLocaleMessageSourceHolder.getMessage(errorStatus.getCode());
         }
@@ -86,7 +86,31 @@ public class BaseRestController {
      * @param errorStatus
      * @return
      */
-    private String msg(ErrorStatus errorStatus){
+    protected String msg(ErrorStatus errorStatus){
+        if(errorStatus != null){
+            return puffLocaleMessageSourceHolder.getMessage(errorStatus.getMsg());
+        }
+        return "";
+    }
+
+    /**
+     * 转换错误状态代码
+     * @param errorStatus
+     * @return
+     */
+    protected String code(ErrorStatus errorStatus,PuffLocaleMessageSourceHolder puffLocaleMessageSourceHolder){
+        if(errorStatus != null){
+            return puffLocaleMessageSourceHolder.getMessage(errorStatus.getCode());
+        }
+        return "";
+    }
+
+    /**
+     * 转换错误状态信息
+     * @param errorStatus
+     * @return
+     */
+    protected String msg(ErrorStatus errorStatus,PuffLocaleMessageSourceHolder puffLocaleMessageSourceHolder){
         if(errorStatus != null){
             return puffLocaleMessageSourceHolder.getMessage(errorStatus.getMsg());
         }

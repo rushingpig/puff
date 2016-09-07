@@ -1,4 +1,4 @@
-package net.blissmall.puff.core.validation.group.user;
+package net.blissmall.puff.validation.group.user;
 
 /**
  * @Author : zhuzhenglin

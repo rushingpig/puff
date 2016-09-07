@@ -1,7 +1,7 @@
 package net.blissmall.puff.vo.user;
 
-import net.blissmall.puff.core.validation.group.*;
-import net.blissmall.puff.core.validation.group.user.*;
+import net.blissmall.puff.validation.group.*;
+import net.blissmall.puff.validation.group.user.*;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Pattern;

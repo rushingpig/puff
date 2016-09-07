@@ -58,8 +58,10 @@ public class RequestForSmsVo implements Serializable{
         switch (smsType){
             case REGISTRY:
                 return "verification.registry";
-            case QUIDK_LOGIN:
+            case QUICK_LOGIN:
                 return "verification.login";
+            case RESET_PASSWORD:
+                return "verification.reset";
             default:
                 throw new IllegalArgumentException();
         }
