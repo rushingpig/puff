@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.blissmall.puff.service.mapper.category.BussProductCategoryMapper">
+
+  <select id="getCategoryWithSort" resultType="net.blissmall.puff.vo.category.BussProductCategoryVo">
+    SELECT bpc.id as `id`,bpc.parent_id as `parentId`,bpc.name as `name`,bpcr.sort as `sort`
+    FROM buss_product_category bpc join buss_product_category_regionalism bpcr
+    on bpc.id = bpcr.category_id and bpc.del_flag = 1 and bpcr.del_flag = 1
+    and bpc.id = #{bussProductCategory.id} and bpcr.regionalism_id = #{regionalismId}
+  </select>
+
+</mapper>

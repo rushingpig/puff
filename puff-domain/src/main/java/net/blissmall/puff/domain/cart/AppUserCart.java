@@ -20,6 +20,9 @@ public class AppUserCart implements Serializable{
     @Column(name = "amount")
     private Integer amount;
 
+    @Column(name = "greeting_card")
+    private String greetingCard;
+
     @Column(name = "created_time")
     private Date createdTime;
 
@@ -69,6 +72,14 @@ public class AppUserCart implements Serializable{
         this.amount = amount;
     }
 
+    public String getGreetingCard() {
+        return greetingCard;
+    }
+
+    public void setGreetingCard(String greetingCard) {
+        this.greetingCard = greetingCard;
+    }
+
     public Date getCreatedTime() {
         return createdTime;
     }
@@ -91,5 +102,10 @@ public class AppUserCart implements Serializable{
 
     public void setDelFlag(Boolean delFlag) {
         this.delFlag = delFlag;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return (obj instanceof AppUserCart) && (this.getSkuId() != null) && (this.getSkuId().equals(((AppUserCart)obj).getSkuId()));
     }
 }
