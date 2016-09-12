@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
 //import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
@@ -38,6 +39,11 @@ public class JSONUtils extends ObjectMapper {
     }
 
     public JSONUtils(Include include) {
+
+        this.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,false);
+
+        this.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+
         // 设置输出时包含属性的风格
         if (include != null) {
             this.setSerializationInclusion(include);
@@ -58,6 +64,17 @@ public class JSONUtils extends ObjectMapper {
             @Override
             public void serialize(String value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
                 jgen.writeString(StringEscapeUtils.unescapeHtml4(value));
+            }
+        }));
+        // 对数据库中的默认值进行统一处理
+        this.registerModule(new SimpleModule().addSerializer(String.class, new JsonSerializer<String>() {
+            @Override
+            public void serialize(String value, JsonGenerator gen, SerializerProvider serializers) throws IOException, JsonProcessingException {
+                if(value == null || "NONE".equals(value)){
+                    gen.writeString("");
+                }else{
+                    gen.writeString(value);
+                }
             }
         }));
         // 设置时区

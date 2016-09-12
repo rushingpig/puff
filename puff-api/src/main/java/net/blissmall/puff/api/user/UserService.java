@@ -139,6 +139,13 @@ public interface UserService {
     List<AppUserDeliveryAddress> findAllDeliveryAddressByUuid(AppUserDeliveryAddress appUserDeliveryAddress);
 
     /**
+     * 根据收货地址id获取详情
+     * @param appUserDeliveryAddress
+     * @return
+     */
+    AppUserDeliveryAddress findDeliveryAddressById(AppUserDeliveryAddress appUserDeliveryAddress);
+
+    /**
      * 删除(软)或者编辑用户收货地址
      * @param appUserDeliveryAddress
      * @return

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.blissmall.puff.service.mapper.regionalism.DictRegionalismMapper">
+  <resultMap id="BaseResultMap" type="net.blissmall.puff.domain.region.DictRegionalism">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="parent_id" jdbcType="INTEGER" property="parentId" />
+    <result column="short_name" jdbcType="VARCHAR" property="shortName" />
+    <result column="level_type" jdbcType="BIT" property="levelType" />
+    <result column="city_code" jdbcType="VARCHAR" property="cityCode" />
+    <result column="zip_code" jdbcType="VARCHAR" property="zipCode" />
+    <result column="merger_name" jdbcType="VARCHAR" property="mergerName" />
+    <result column="lng" jdbcType="VARCHAR" property="lng" />
+    <result column="lat" jdbcType="VARCHAR" property="lat" />
+    <result column="pinying" jdbcType="VARCHAR" property="pinying" />
+    <result column="del_flag" jdbcType="BIT" property="delFlag" />
+    <result column="updated_by" jdbcType="INTEGER" property="updatedBy" />
+    <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime" />
+  </resultMap>
+</mapper>

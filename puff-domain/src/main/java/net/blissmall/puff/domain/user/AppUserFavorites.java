@@ -60,7 +60,7 @@ public class AppUserFavorites {
     private String productImageUrl;
 
     @Transient
-    private Integer lastId;
+    private Integer pageNo;
 
     /**
      * @return id
@@ -228,11 +228,14 @@ public class AppUserFavorites {
         this.productImageUrl = productImageUrl;
     }
 
-    public Integer getLastId() {
-        return lastId;
+    public Integer getPageNo() {
+        if(pageNo == null){
+            pageNo = 0;
+        }
+        return pageNo;
     }
 
-    public void setLastId(Integer lastId) {
-        this.lastId = lastId;
+    public void setPageNo(Integer pageNo) {
+        this.pageNo = pageNo;
     }
 }

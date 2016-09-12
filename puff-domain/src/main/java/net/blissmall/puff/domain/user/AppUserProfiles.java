@@ -1,10 +1,14 @@
 package net.blissmall.puff.domain.user;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.persistence.*;
+import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Date;
 
 @Table(name = "app_user_profiles")
-public class AppUserProfiles {
+public class AppUserProfiles implements Serializable{
     /**
      * 用户唯一ID标识
      */
@@ -22,7 +26,7 @@ public class AppUserProfiles {
      * 用户手机号
      */
     @Column(name = "mobile_phone")
-    private Integer mobilePhone;
+    private BigInteger mobilePhone;
 
     /**
      * 用户头像链接地址
@@ -49,6 +53,7 @@ public class AppUserProfiles {
     /**
      * 用户生日
      */
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date birthday;
 
     /**
@@ -121,7 +126,7 @@ public class AppUserProfiles {
      *
      * @return mobile_phone - 用户手机号
      */
-    public Integer getMobilePhone() {
+    public BigInteger getMobilePhone() {
         return mobilePhone;
     }
 
@@ -130,7 +135,7 @@ public class AppUserProfiles {
      *
      * @param mobilePhone 用户手机号
      */
-    public void setMobilePhone(Integer mobilePhone) {
+    public void setMobilePhone(BigInteger mobilePhone) {
         this.mobilePhone = mobilePhone;
     }
 

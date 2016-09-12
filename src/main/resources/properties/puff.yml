@@ -9,7 +9,7 @@ mybatis :
 shiro :
     loginUrl : /login
     successUrl : /success
-    ehcacheConfigLocation : classpath:ehcache-local.xml
+    ehcacheConfigLocation : classpath:ehcache.xml
     filterChainDefinitions : /static/** = anon
                              /login = authc
                              /logout = logout

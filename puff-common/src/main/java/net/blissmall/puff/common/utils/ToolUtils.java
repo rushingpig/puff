@@ -15,6 +15,8 @@ public class ToolUtils {
 
     private static int DEFAULT_CODE_LENGTH = 4;
 
+    private final static String DB_NULL_VALUE = "NONE";
+
     private final Logger logger = LoggerFactory.getLogger(ToolUtils.class);
 
     /**
@@ -39,6 +41,14 @@ public class ToolUtils {
         return getValidateCode(DEFAULT_CODE_LENGTH);
     }
 
+    /**
+     * 获取缓存key值
+     * @param keyPrefix
+     * @param middle
+     * @param suffix
+     * @param seperator
+     * @return
+     */
     public static String getCacheKey(String keyPrefix,String middle,String suffix,String seperator){
         return new StringBuilder(keyPrefix).append(seperator).append(middle).append(seperator).append(suffix).toString();
     }
@@ -66,5 +76,49 @@ public class ToolUtils {
         ip.append((ipLong >>> 8) & 0xFF).append(".");
         ip.append(ipLong & 0xFF);
         return ip.toString();
+    }
+
+    /**
+     * 当数据库字段列值为"NONE"默认值时,即表示为空
+     * @param dbValue
+     * @return
+     */
+    public static Object purgeDBColumnValue(Object dbValue){
+        if(dbValue == null){
+            return "";
+        }
+        if(dbValue instanceof String){
+            String value = (String)dbValue;
+            if((StringUtils.isNotBlank(value) && StringUtils.equals("NONE",value))){
+                return "";
+            }
+        }
+        return dbValue;
+    }
+
+    /**
+     * 获取性别名称
+     * @param sex
+     * @return
+     */
+    public static String getSexName(String sex){
+        if(StringUtils.equals("1",sex)){
+            return "男";
+        }else if(StringUtils.equals("2",sex)){
+            return "女";
+        }else{
+            return "未知";
+        }
+    }
+
+    /**
+     * 获取可视化的省市区详细地址
+     * @param province
+     * @param city
+     * @param regionalism
+     * @return
+     */
+    public static String getAddress(Object province,Object city,Object regionalism,Object address){
+        return (purgeDBColumnValue(province) + " " + purgeDBColumnValue(city) + " " + purgeDBColumnValue(regionalism) + " " + purgeDBColumnValue(address)).trim();
     }
 }

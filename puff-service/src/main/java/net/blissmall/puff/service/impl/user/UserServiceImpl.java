@@ -1,10 +1,12 @@
 package net.blissmall.puff.service.impl.user;
 
 import com.github.pagehelper.PageHelper;
+import net.blissmall.puff.api.regionalism.RegionalismService;
 import net.blissmall.puff.api.user.UserLogService;
 import net.blissmall.puff.api.user.UserService;
 import net.blissmall.puff.common.utils.CryptoUtils;
 import net.blissmall.puff.common.utils.StringUtils;
+import net.blissmall.puff.common.utils.ToolUtils;
 import net.blissmall.puff.common.utils.UUIDUtils;
 import net.blissmall.puff.core.mapper.MyMapper;
 import net.blissmall.puff.domain.user.AppUserAuths;
@@ -32,6 +34,7 @@ import tk.mybatis.mapper.entity.Example;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 
@@ -60,6 +63,8 @@ public class UserServiceImpl extends BaseService implements UserService {
     private AppUserFavoritesMapper appUserFavoritesMapper;
     @Resource
     private AppUserDeliveryAddressMapper appUserDeliveryAddressMapper;
+    @Resource
+    private RegionalismService regionalismService;
     @Resource
     private RestTemplate restTemplate;
     @Resource(name = "stringRedisTemplate")
@@ -163,17 +168,13 @@ public class UserServiceImpl extends BaseService implements UserService {
 
     @Override
     public List<AppUserFavorites> findAllFavorites(AppUserFavorites appUserFavorites) {
-        Integer lastId = appUserFavorites.getLastId();
+        Integer pageNo = appUserFavorites.getPageNo();
         String uuid = appUserFavorites.getUuid();
-        PageHelper.startPage(0,PuffNamedConstant.FAVORITE_PER_PAGE);
+        PageHelper.startPage(pageNo,PuffNamedConstant.FAVORITE_PER_PAGE);
         PageHelper.orderBy("id desc");
-        if(lastId != null && lastId > 0){
-            Example example = new Example(AppUserFavorites.class);
-            example.createCriteria().andLessThan("id",lastId).andEqualTo("uuid",uuid).andEqualTo("delFlag", MyMapper.DelFlag.VALID.getStatus());
-            return appUserFavoritesMapper.selectByExample(example);
-        }else{
-            return appUserFavoritesMapper.select(appUserFavorites);
-        }
+        Example example = new Example(AppUserFavorites.class);
+        example.createCriteria().andEqualTo("uuid",uuid).andEqualTo("delFlag", MyMapper.DelFlag.VALID.getStatus());
+        return appUserFavoritesMapper.selectByExample(example);
     }
 
     @Override
@@ -194,15 +195,25 @@ public class UserServiceImpl extends BaseService implements UserService {
     @Override
     public List<AppUserDeliveryAddress> findAllDeliveryAddressByUuid(AppUserDeliveryAddress appUserDeliveryAddress) {
         appUserDeliveryAddress.setDelFlag(MyMapper.DelFlag.VALID.getStatus());
-        return appUserDeliveryAddressMapper.select(appUserDeliveryAddress);
+        List<AppUserDeliveryAddress> list = appUserDeliveryAddressMapper.select(appUserDeliveryAddress);
+        Map<String,String> idNameMap = regionalismService.getRegionalismIdNameMap();
+        for(AppUserDeliveryAddress curr : list){
+            String provinceName = idNameMap.get(curr.getProvinceId().toString());
+            String cityName = idNameMap.get(curr.getCityId().toString());
+            String regionalismName = idNameMap.get(curr.getRegionalismId().toString());
+            String address = ToolUtils.purgeDBColumnValue(provinceName) + "," + ToolUtils.purgeDBColumnValue(cityName) + "," + ToolUtils.purgeDBColumnValue(regionalismName) + " " + ToolUtils.purgeDBColumnValue(curr.getAddress());
+            curr.setAddress(address);
+        }
+        return list;
+    }
+
+    @Override
+    public AppUserDeliveryAddress findDeliveryAddressById(AppUserDeliveryAddress appUserDeliveryAddress) {
+        return appUserDeliveryAddressMapper.selectByPrimaryKey(appUserDeliveryAddress.getId());
     }
 
     @Override
     public int updateUserDeliveryAddress(AppUserDeliveryAddress appUserDeliveryAddress) {
-        // 防止登录的用户更改自己收货地址的uuid,造成信息错乱
-        appUserDeliveryAddress.setUuid(null);
-        // 不允许更改数据状态
-        appUserDeliveryAddress.setDelFlag(null);
         int result = appUserDeliveryAddressMapper.updateByPrimaryKeySelective(appUserDeliveryAddress);
         return result;
     }

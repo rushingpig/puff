@@ -1,10 +1,10 @@
 package net.blissmall.puff.web.controller;
 
 import net.blissmall.puff.common.utils.WebUtils;
-import net.blissmall.puff.domain.user.AppUserAuths;
 import net.blissmall.puff.service.constant.ErrorStatus;
 import net.blissmall.puff.service.constant.PuffNamedConstant;
 import net.blissmall.puff.vo.http.BaseResponseVo;
+import net.blissmall.puff.vo.user.UserInfoVo;
 import net.blissmall.puff.web.core.holder.PuffLocaleMessageSourceHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +25,8 @@ public class BaseRestController {
     @Resource
     protected PuffLocaleMessageSourceHolder puffLocaleMessageSourceHolder;
 
-    protected AppUserAuths getLoginUser(HttpSession session){
-        return WebUtils.getSessionAttribute(session, PuffNamedConstant.USER_SESSION_KEY,AppUserAuths.class);
+    protected UserInfoVo getLoginUser(HttpSession session){
+        return WebUtils.getSessionAttribute(session, PuffNamedConstant.USER_SESSION_KEY,UserInfoVo.class);
     }
 
 

@@ -26,14 +26,18 @@ package net.blissmall.puff;
               佛祖保佑         永无BUG
 */
 
+import net.blissmall.puff.api.regionalism.RegionalismService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.boot.web.servlet.ServletComponentScan;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+
+import javax.annotation.Resource;
 
 /**
  * the entrance of the whole application
@@ -43,12 +47,15 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
  */
 @SpringBootApplication(scanBasePackages = {"net.blissmall.puff.core","net.blissmall.puff.service","net.blissmall.puff.web"},
         exclude={DataSourceAutoConfiguration.class, ThymeleafAutoConfiguration.class})
-@EnableCaching(proxyTargetClass = true)
 @EnableRedisHttpSession(maxInactiveIntervalInSeconds = 3600)
 @ServletComponentScan(basePackages = {"net.blissmall.puff.web.j2ee"})
 
 public class PuffBootApplication implements CommandLineRunner {
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Resource
+    private RegionalismService regionalismService;
 
     public static void main(String[] args) throws InterruptedException {
         SpringApplication app = new SpringApplication(PuffBootApplication.class);
@@ -71,6 +78,14 @@ public class PuffBootApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        // 初始化行政区域缓存信息
+        initRegionalism();
         System.out.println("==========>       the puff has been started         <============");
+    }
+
+    private void initRegionalism(){
+        regionalismService.getRegionalismIdNameMap();
+        regionalismService.getRegionalismNameIdMap();
+        logger.info("==========>       初始化省市区信息完成         <============");
     }
 }

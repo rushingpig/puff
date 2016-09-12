@@ -1,9 +1,9 @@
 package net.blissmall.puff.web.core.advice;
 
-import net.blissmall.puff.domain.user.AppUserAuths;
 import net.blissmall.puff.service.constant.ErrorStatus;
 import net.blissmall.puff.service.exception.BussException;
 import net.blissmall.puff.vo.http.BaseResponseVo;
+import net.blissmall.puff.vo.user.UserInfoVo;
 import net.blissmall.puff.web.controller.BaseRestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,11 +30,11 @@ public class RestControllerAdvice extends BaseRestController{
 
     @ModelAttribute
     public String getUuid(HttpSession session){
-        AppUserAuths sessionUser = getLoginUser(session);
-        if(sessionUser == null){
+        UserInfoVo sessionUser = getLoginUser(session);
+        if(sessionUser == null || sessionUser.getAppUserAuths() == null){
             return "";
         }
-        return sessionUser.getUuid();
+        return sessionUser.getAppUserAuths().getUuid();
     }
 
     /**

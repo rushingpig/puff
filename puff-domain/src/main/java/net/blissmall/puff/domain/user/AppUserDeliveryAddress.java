@@ -14,7 +14,7 @@ public class AppUserDeliveryAddress {
     /**
      * 用户ID
      */
-    @NotBlank(message = "{NotBlank.AppUserDeliveryAddress.uuid}")
+//    @NotBlank(message = "{NotBlank.AppUserDeliveryAddress.uuid}")
     @Column(name = "uuid")
     private String uuid;
 
