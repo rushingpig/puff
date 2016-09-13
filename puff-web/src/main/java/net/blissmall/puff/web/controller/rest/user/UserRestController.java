@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.support.SessionStatus;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -244,24 +243,6 @@ public class UserRestController extends BaseRestController {
         }
     }
 
-    /**
-     * 用户登出
-     *
-     * @param request
-     * @param response
-     * @param session
-     * @return
-     */
-    @GetMapping("logout")
-    public BaseResponseVo logout(HttpServletRequest request, HttpServletResponse response, HttpSession session , SessionStatus sessionStatus) {
-        session.removeAttribute(USER_SESSION_KEY);
-        /**
-         * 清除掉所有@SessionAtrribute注解存储的模型值
-         */
-//        sessionStatus.setComplete();
-        CookieUtils.clearCookie(request, response, PuffNamedConstant.PUFF_COOKIE_NAME);
-        return ok();
-    }
 
     @PostMapping("preReset")
     public BaseResponseVo preReset(@Validated({QuickLoginGroup.class}) @RequestBody LoginVo loginVo, BindingResult bindingResult, HttpServletResponse response, HttpSession session) {
@@ -317,11 +298,17 @@ public class UserRestController extends BaseRestController {
      * @param response
      * @return
      */
-    @PutMapping("userInfo")
+    @PutMapping({"userInfo","userInfo/avatar"})
     public BaseResponseVo updateUserInfo(@RequestBody AppUserProfiles appUserProfiles, BindingResult bindingResult, HttpServletResponse response, HttpSession session) {
-        String sessionUUID = getLoginUser(session).getAppUserAuths().getUuid();
+        UserInfoVo sessionUser = getLoginUser(session);
+        String sessionUUID = sessionUser.getAppUserAuths().getUuid();
         appUserProfiles.setUuid(sessionUUID);
         userService.updateUserInfo(appUserProfiles);
+        if(StringUtils.isBlank(appUserProfiles.getAvatar())){
+            appUserProfiles.setAvatar(sessionUser.getAppUserProfiles().getAvatar());
+        }
+        sessionUser.setAppUserProfiles(appUserProfiles);
+        updateSessionUserAndClearCookie(session,sessionUser);
         return ok();
     }
 

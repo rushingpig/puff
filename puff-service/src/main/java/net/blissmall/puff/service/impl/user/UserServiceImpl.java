@@ -170,7 +170,7 @@ public class UserServiceImpl extends BaseService implements UserService {
     public List<AppUserFavorites> findAllFavorites(AppUserFavorites appUserFavorites) {
         Integer pageNo = appUserFavorites.getPageNo();
         String uuid = appUserFavorites.getUuid();
-        PageHelper.startPage(pageNo,PuffNamedConstant.FAVORITE_PER_PAGE);
+        PageHelper.startPage(pageNo,PuffNamedConstant.FAVORITE_PER_PAGE,false);
         PageHelper.orderBy("id desc");
         Example example = new Example(AppUserFavorites.class);
         example.createCriteria().andEqualTo("uuid",uuid).andEqualTo("delFlag", MyMapper.DelFlag.VALID.getStatus());

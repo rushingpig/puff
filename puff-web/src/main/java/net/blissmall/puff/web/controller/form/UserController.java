@@ -62,4 +62,9 @@ public class UserController extends BaseController{
         return "profile-favourite";
     }
 
+    @GetMapping("uploadAvatar")
+    public String uploadAvatar(){
+        return "profile-avatar";
+    }
+
 }

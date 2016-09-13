@@ -29,6 +29,14 @@ public class BaseRestController {
         return WebUtils.getSessionAttribute(session, PuffNamedConstant.USER_SESSION_KEY,UserInfoVo.class);
     }
 
+    /**
+     * 更新session用户信息
+     * @param session
+     * @param userInfoVo
+     */
+    protected void updateSessionUserAndClearCookie(HttpSession session,UserInfoVo userInfoVo){
+        session.setAttribute(PuffNamedConstant.USER_SESSION_KEY,userInfoVo);
+    }
 
 
     protected BaseResponseVo restRes(String code,String msg,Object data,Object err){
