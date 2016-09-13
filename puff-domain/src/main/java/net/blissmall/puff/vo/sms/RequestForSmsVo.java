@@ -1,7 +1,6 @@
 package net.blissmall.puff.vo.sms;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 请求发送短信接口时的vo类
@@ -14,7 +13,7 @@ public class RequestForSmsVo implements Serializable{
 
     private String method = "verification.registry";
     private String phone;
-    private Date timestamp = new Date();
+    private long timestamp = System.currentTimeMillis();
     private Params params;
 
     public String getMethod() {
@@ -33,11 +32,11 @@ public class RequestForSmsVo implements Serializable{
         this.phone = phone;
     }
 
-    public Date getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 
