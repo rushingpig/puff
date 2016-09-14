@@ -4,9 +4,11 @@ import com.google.common.collect.Maps;
 import net.blissmall.puff.api.regionalism.RegionalismService;
 import net.blissmall.puff.core.mapper.MyMapper;
 import net.blissmall.puff.domain.region.DictRegionalism;
+import net.blissmall.puff.service.impl.BaseService;
 import net.blissmall.puff.service.mapper.regionalism.DictRegionalismMapper;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -21,7 +23,7 @@ import java.util.Map;
  */
 @Service
 @CacheConfig(cacheNames = {"regionalism"})
-public class RegionalismServiceImpl implements RegionalismService {
+public class RegionalismServiceImpl extends BaseService implements RegionalismService {
 
     @Resource
     private DictRegionalismMapper dictRegionalismMapper;
@@ -51,4 +53,13 @@ public class RegionalismServiceImpl implements RegionalismService {
         }
         return maps;
     }
+
+    @Override
+    @Async
+    public void initRegionalism(){
+        getRegionalismIdNameMap();
+        getRegionalismNameIdMap();
+        logger.info("==========>       初始化省市区信息完成         <============");
+    }
+
 }

@@ -13,4 +13,6 @@ public interface RegionalismService {
     Map<String,String> getRegionalismIdNameMap();
 
     Map<String,String> getRegionalismNameIdMap();
+
+    void initRegionalism();
 }

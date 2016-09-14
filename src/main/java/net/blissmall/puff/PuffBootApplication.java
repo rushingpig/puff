@@ -79,13 +79,7 @@ public class PuffBootApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         // 初始化行政区域缓存信息
-        initRegionalism();
+        regionalismService.initRegionalism();
         System.out.println("==========>       the puff has been started         <============");
-    }
-
-    private void initRegionalism(){
-        regionalismService.getRegionalismIdNameMap();
-        regionalismService.getRegionalismNameIdMap();
-        logger.info("==========>       初始化省市区信息完成         <============");
     }
 }

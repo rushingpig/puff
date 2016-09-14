@@ -35,6 +35,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 
@@ -93,8 +94,10 @@ public class UserServiceImpl extends BaseService implements UserService {
     @Transactional
     public String addUserAndInfo(RegistryLoginVo registryLoginVo) {
         String uuid = addUser(registryLoginVo);
+        String username = registryLoginVo.getUsername();
         AppUserProfiles appUserProfiles = new AppUserProfiles();
         appUserProfiles.setUuid(uuid);
+        appUserProfiles.setNickName(PuffNamedConstant.DEFAULT_NICKNAME_PREFIX + StringUtils.substring(username,username.length() - 4));
         int result = appUserProfilesMapper.insertSelective(appUserProfiles);
         if(result > 0){
             return uuid;
@@ -114,9 +117,20 @@ public class UserServiceImpl extends BaseService implements UserService {
         String realPassword = appUserAuths.getAuthToken();
         String uuid = appUserAuths.getUuid();
         boolean verify = StringUtils.equals(CryptoUtils.MD5(inputPassword),realPassword);
+        logger.info("准备异步记录日志。。。");
         if(verify){
             // 异步记录登录日志
             Future<Integer> result = userLogService.recordLoginLog(loginVo,appUserAuths.getUuid());
+            try {
+                Integer insertId = result.get();
+                if(insertId < 1){
+                    logger.error("记录用户登录信息异常");
+                }
+            } catch (InterruptedException e) {
+                logger.error("记录用户登录信息异常{}",e);
+            } catch (ExecutionException e) {
+                logger.error("记录用户登录信息异常{}",e);
+            }
             return uuid;
         }
         return null;

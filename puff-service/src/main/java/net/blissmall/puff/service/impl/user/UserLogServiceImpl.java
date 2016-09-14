@@ -1,6 +1,7 @@
 package net.blissmall.puff.service.impl.user;
 
 import com.google.common.collect.Maps;
+import net.blissmall.puff.api.regionalism.RegionalismService;
 import net.blissmall.puff.api.user.UserLogService;
 import net.blissmall.puff.common.utils.WebUtils;
 import net.blissmall.puff.domain.user.LogsUserLogin;
@@ -33,23 +34,27 @@ public class UserLogServiceImpl extends BaseService implements UserLogService {
     private String ipHost;
     @Resource
     private RestTemplate restTemplate;
+    @Resource
+    private RegionalismService regionalismService;
 
     @Resource
     private LogsUserLoginMapper logsUserLoginMapper;
 
     @Override
     @Async
-    public Future<Integer> recordLoginLog(LoginVo loginVo, String uuid) {
+    public Future<Integer> recordLoginLog(LoginVo loginVo, String uuid){
         Map<String,String> queryParams = Maps.newHashMap();
         queryParams.put("ip",loginVo.getIp());
         URI uri = WebUtils.getRestQueryURI(ipHost,queryParams);
-        Map region = restTemplate.getForObject(uri, Map.class);
+        Map<String,String> region = restTemplate.getForObject(uri, Map.class);
+        String provinceName = region.get("province");
+        String cityName = region.get("city");
         LogsUserLogin logsUserLogin = new LogsUserLogin();
         logsUserLogin.setUuid(uuid);
         logsUserLogin.setAuthId(loginVo.getUsername());
         logsUserLogin.setLoginTime(new Date());
-        // TODO 获取客户端IP并根据IP地址获取对应的行政区域
-
+        logsUserLogin.setProvinceId(Integer.valueOf(regionalismService.getRegionalismNameIdMap().get(provinceName)));
+        logsUserLogin.setCityId(Integer.valueOf(regionalismService.getRegionalismNameIdMap().get(cityName)));
         Integer result = logsUserLoginMapper.insertUseGeneratedSelectiveKeys(logsUserLogin);
         return new AsyncResult<>(result);
     }

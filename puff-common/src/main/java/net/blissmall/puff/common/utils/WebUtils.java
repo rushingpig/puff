@@ -29,12 +29,14 @@ public class WebUtils extends org.springframework.web.util.WebUtils {
      * @return
      */
     public static URI getRestQueryURI(String httpUrl, Map<String,?> queryParams){
-        if(StringUtils.isBlank(httpUrl) || queryParams == null){
+        if(StringUtils.isBlank(httpUrl)){
             return null;
         }
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(httpUrl);
-        for(Map.Entry<String,?> entry : queryParams.entrySet()){
-            builder = builder.queryParam(entry.getKey(),entry.getValue());
+        if(queryParams != null){
+            for(Map.Entry<String,?> entry : queryParams.entrySet()){
+                builder = builder.queryParam(entry.getKey(),entry.getValue());
+            }
         }
         return builder.build().encode().toUri();
     }

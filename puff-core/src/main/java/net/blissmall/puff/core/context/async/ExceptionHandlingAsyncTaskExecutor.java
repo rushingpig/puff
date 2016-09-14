@@ -9,6 +9,9 @@ import org.springframework.core.task.AsyncTaskExecutor;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
+/**
+ * 在spring4.1后可以直接用{@link org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler}处理
+ */
 public class ExceptionHandlingAsyncTaskExecutor implements AsyncTaskExecutor,
     InitializingBean, DisposableBean {
 

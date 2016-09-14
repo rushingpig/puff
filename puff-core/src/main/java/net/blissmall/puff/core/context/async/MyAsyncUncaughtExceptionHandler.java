@@ -7,7 +7,11 @@ import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import java.lang.reflect.Method;
 
 /**
- * 处理异步任务抛出的异常
+ * 处理异步任务抛出的异常<br/>
+ * <pre>
+ *  TIPS: 1.只有当方法返回值为void时，异常才会捕获
+ *        2.如果方法返回值为Future，异常可以直接通过Future获取
+ * </pre>
  */
 public class MyAsyncUncaughtExceptionHandler implements AsyncUncaughtExceptionHandler {
 

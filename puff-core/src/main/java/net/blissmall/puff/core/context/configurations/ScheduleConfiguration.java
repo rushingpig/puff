@@ -1,11 +1,12 @@
 package net.blissmall.puff.core.context.configurations;
 
-import net.blissmall.puff.core.context.handler.MyAsyncUncaughtExceptionHandler;
+import net.blissmall.puff.core.context.async.MyAsyncUncaughtExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
@@ -18,6 +19,7 @@ import java.util.concurrent.Executor;
  * @Since : v1.0
  */
 @Configuration
+@EnableAsync
 public class ScheduleConfiguration implements AsyncConfigurer{
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
