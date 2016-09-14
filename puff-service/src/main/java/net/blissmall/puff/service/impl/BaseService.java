@@ -1,9 +1,11 @@
 package net.blissmall.puff.service.impl;
 
+import net.blissmall.puff.common.utils.StringUtils;
 import net.blissmall.puff.common.utils.ToolUtils;
 import net.blissmall.puff.service.constant.PuffNamedConstant;
 import net.blissmall.puff.vo.sms.SmsVo;
 import net.blissmall.puff.vo.user.LoginVo;
+import net.blissmall.puff.vo.user.RegistryLoginVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +38,16 @@ public class BaseService {
      */
     protected String getOverLoginCount(LoginVo loginVo) {
         return PuffNamedConstant.USER_SESSION_KEY + PuffNamedConstant.COOKIE_ENCODE_SEP + loginVo.getUsername() + PuffNamedConstant.COOKIE_ENCODE_SEP + "login";
+    }
+
+    /**
+     * 获取用户昵称
+     * @param registryLoginVo
+     * @return
+     */
+    public static String getNickname(RegistryLoginVo registryLoginVo){
+        String username = registryLoginVo.getUsername();
+        return PuffNamedConstant.DEFAULT_NICKNAME_PREFIX + StringUtils.substring(username,username.length() - 4);
     }
 
 }

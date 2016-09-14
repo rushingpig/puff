@@ -11,6 +11,7 @@ import net.blissmall.puff.domain.user.AppUserFavorites;
 import net.blissmall.puff.domain.user.AppUserProfiles;
 import net.blissmall.puff.service.constant.ErrorStatus;
 import net.blissmall.puff.service.constant.PuffNamedConstant;
+import net.blissmall.puff.service.impl.BaseService;
 import net.blissmall.puff.validation.group.user.*;
 import net.blissmall.puff.vo.http.BaseResponseVo;
 import net.blissmall.puff.vo.sms.SmsVo;
@@ -223,15 +224,21 @@ public class UserRestController extends BaseRestController {
             appUserAuths = userService.getUser(appUserAuths);
             if (appUserAuths == null) {
                 String uuid = userService.addUserAndInfo(loginVo);
+                appUserAuths = new AppUserAuths();
                 if (StringUtils.isNotBlank(uuid)) {
                     appUserAuths.setUuid(uuid);
                     AppUserProfiles appUserProfiles = new AppUserProfiles();
                     appUserProfiles.setUuid(uuid);
-                    appUserProfiles = userService.getUserProfile(appUserProfiles);
+                    appUserProfiles.setNickName(BaseService.getNickname(loginVo));
                     userInfoVo = new UserInfoVo(appUserAuths,appUserProfiles);
                 } else {
                     return fail(puffLocaleMessageSourceHolder.getMessage("INSERT_USERINFO_EXCEPTION"));
                 }
+            }else {
+                AppUserProfiles appUserProfiles = new AppUserProfiles();
+                appUserProfiles.setUuid(appUserAuths.getUuid());
+                appUserProfiles = userService.getUserProfile(appUserProfiles);
+                userInfoVo = new UserInfoVo(appUserAuths,appUserProfiles);
             }
             // 把用户信息加入到客户端cookie
             writeSessionAndCookie(loginVo, userInfoVo, session, response);
@@ -253,6 +260,7 @@ public class UserRestController extends BaseRestController {
         if (!authed) {
             return bad(ErrorStatus.ERROR_SMS_VALIDATE_CODE);
         } else {
+            session.setAttribute(PuffNamedConstant.RESET_PASSWORD_SESSION_KEY,loginVo.getUsername());
             return ok();
         }
     }
@@ -273,7 +281,7 @@ public class UserRestController extends BaseRestController {
         if (!StringUtils.equals(password, confirmPassword)) {
             return assembleRestParamErr("confirmPassword", "********", "Consistent.RegistryVo.confirmPassword");
         }
-        if (session.getAttribute(USER_SESSION_KEY) == null) {
+        if (session.getAttribute(PuffNamedConstant.RESET_PASSWORD_SESSION_KEY) == null) {
             return bad(ErrorStatus.RESET_PASSOWRD_FORBIDDEN);
         }
         userService.changePassword(registryVo);

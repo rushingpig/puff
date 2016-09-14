@@ -50,5 +50,9 @@ public class PuffNamedConstant {
      * 用户昵称的默认前缀
      */
     public final static String DEFAULT_NICKNAME_PREFIX = "幸福用户";
+    /**
+     * 用户找回密码session key
+     */
+    public final static String RESET_PASSWORD_SESSION_KEY = "puff.reset.user";
 
 }

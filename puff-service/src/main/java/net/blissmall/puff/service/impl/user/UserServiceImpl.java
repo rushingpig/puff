@@ -94,10 +94,10 @@ public class UserServiceImpl extends BaseService implements UserService {
     @Transactional
     public String addUserAndInfo(RegistryLoginVo registryLoginVo) {
         String uuid = addUser(registryLoginVo);
-        String username = registryLoginVo.getUsername();
+
         AppUserProfiles appUserProfiles = new AppUserProfiles();
         appUserProfiles.setUuid(uuid);
-        appUserProfiles.setNickName(PuffNamedConstant.DEFAULT_NICKNAME_PREFIX + StringUtils.substring(username,username.length() - 4));
+        appUserProfiles.setNickName(getNickname(registryLoginVo));
         int result = appUserProfilesMapper.insertSelective(appUserProfiles);
         if(result > 0){
             return uuid;
