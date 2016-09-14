@@ -1,15 +1,12 @@
 package net.blissmall.puff.web.controller;
 
-import net.blissmall.puff.common.utils.WebUtils;
 import net.blissmall.puff.service.constant.ErrorStatus;
 import net.blissmall.puff.service.constant.PuffNamedConstant;
 import net.blissmall.puff.vo.http.BaseResponseVo;
 import net.blissmall.puff.vo.user.UserInfoVo;
+import net.blissmall.puff.web.CommonController;
 import net.blissmall.puff.web.core.holder.PuffLocaleMessageSourceHolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -18,16 +15,7 @@ import javax.servlet.http.HttpSession;
  * @Email : zhenglin.zhu@xfxb.net
  * @Since : v1.0
  */
-public class BaseRestController {
-
-    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    @Resource
-    protected PuffLocaleMessageSourceHolder puffLocaleMessageSourceHolder;
-
-    protected UserInfoVo getLoginUser(HttpSession session){
-        return WebUtils.getSessionAttribute(session, PuffNamedConstant.USER_SESSION_KEY,UserInfoVo.class);
-    }
+public class BaseRestController extends CommonController{
 
     /**
      * 更新session用户信息

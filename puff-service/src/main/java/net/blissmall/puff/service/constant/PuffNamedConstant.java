@@ -49,6 +49,6 @@ public class PuffNamedConstant {
     /**
      * 用户昵称的默认前缀
      */
-    public final static String DEFAULT_NICKNAME_PREFIX = "幸福商城用户";
+    public final static String DEFAULT_NICKNAME_PREFIX = "幸福用户";
 
 }

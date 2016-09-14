@@ -397,10 +397,9 @@ public class UserRestController extends BaseRestController {
      * @return
      */
     @PostMapping("deliveryAddress")
-    public BaseResponseVo deliveryAddress(@RequestBody @Validated AppUserDeliveryAddress appUserDeliveryAddress, BindingResult bindingResult, HttpServletResponse response) {
-        AppUserDeliveryAddress deliveryAddress = new AppUserDeliveryAddress();
-        deliveryAddress.setUuid(appUserDeliveryAddress.getUuid());
-        if (userService.deliveryAddressOverLimitCount(deliveryAddress)) {
+    public BaseResponseVo deliveryAddress(@RequestBody @Validated AppUserDeliveryAddress appUserDeliveryAddress, BindingResult bindingResult, HttpServletResponse response,HttpSession session) {
+        appUserDeliveryAddress.setUuid(getLoginUser(session).getAppUserAuths().getUuid());
+        if (userService.deliveryAddressOverLimitCount(appUserDeliveryAddress)) {
             return bad(ErrorStatus.OVER_DELIVERY_ADDRESS_LIMIT);
         } else if (userService.addUserDeliveryAddress(appUserDeliveryAddress) < 1) {
             return fail();
@@ -428,7 +427,8 @@ public class UserRestController extends BaseRestController {
 
     @PutMapping("deliveryAddress/{deliveryAddressId}/default")
     public BaseResponseVo settingDefaultDeliveryAddress(@PathVariable Integer deliveryAddressId, HttpSession session) {
-        userService.defaultDeliveryAddress(deliveryAddressId, WebUtils.getSessionAttribute(session, USER_SESSION_KEY, AppUserAuths.class).getUuid());
+        UserInfoVo userInfoVo = getLoginUser(session);
+        userService.defaultDeliveryAddress(deliveryAddressId, userInfoVo.getAppUserAuths().getUuid());
         return ok();
     }
 

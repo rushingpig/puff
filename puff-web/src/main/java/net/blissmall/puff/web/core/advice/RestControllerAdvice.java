@@ -3,7 +3,6 @@ package net.blissmall.puff.web.core.advice;
 import net.blissmall.puff.service.constant.ErrorStatus;
 import net.blissmall.puff.service.exception.BussException;
 import net.blissmall.puff.vo.http.BaseResponseVo;
-import net.blissmall.puff.vo.user.UserInfoVo;
 import net.blissmall.puff.web.controller.BaseRestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +16,6 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolationException;
 
 /**
@@ -27,15 +25,6 @@ import javax.validation.ConstraintViolationException;
  */
 @ControllerAdvice(annotations = {RestController.class})
 public class RestControllerAdvice extends BaseRestController{
-
-    @ModelAttribute
-    public String getUuid(HttpSession session){
-        UserInfoVo sessionUser = getLoginUser(session);
-        if(sessionUser == null || sessionUser.getAppUserAuths() == null){
-            return "";
-        }
-        return sessionUser.getAppUserAuths().getUuid();
-    }
 
     /**
      * 参数校验的异常处理(主要是来源于service层)
