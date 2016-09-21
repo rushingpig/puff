@@ -10,7 +10,11 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.OutputStream;
 import java.util.Hashtable;
+
+import static com.google.zxing.client.j2se.MatrixToImageWriter.writeToPath;
+
 
 /**
  * 二维码 / 条形码  编码和解码
@@ -19,6 +23,8 @@ import java.util.Hashtable;
  * @Email zhenglin.zhu@xfxb.net
  */
 public class ZxingUtils {
+
+    private final static String DEFUALT_IMAGE_FORMAT = "PNG";
 
     /**
      * 条形码编码
@@ -39,13 +45,13 @@ public class ZxingUtils {
             BitMatrix bitMatrix = new MultiFormatWriter().encode(contents,
                     BarcodeFormat.EAN_13, codeWidth, height, null);
 
-            MatrixToImageWriter
-                    .writeToPath(bitMatrix, "png", new File(imgPath).toPath());
+            writeToPath(bitMatrix, "png", new File(imgPath).toPath());
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     /**
      * 条形码解码
@@ -90,8 +96,30 @@ public class ZxingUtils {
             BitMatrix bitMatrix = new MultiFormatWriter().encode(contents,
                     BarcodeFormat.QR_CODE, width, height, hints);
 
-            MatrixToImageWriter
-                    .writeToPath(bitMatrix, "png", new File(imgPath).toPath());
+            MatrixToImageWriter.writeToPath(bitMatrix, DEFUALT_IMAGE_FORMAT, new File(imgPath).toPath());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 直接将生成的二维码以流的形式输出
+     * @param contents
+     * @param width
+     * @param height
+     * @param os
+     */
+    public static void encodeToStream(String contents, int width, int height, OutputStream os){
+        Hashtable<EncodeHintType, Object> hints = new Hashtable<EncodeHintType, Object>();
+        // 指定纠错等级
+        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+        // 指定编码格式
+        hints.put(EncodeHintType.CHARACTER_SET, "GBK");
+        try {
+            BitMatrix bitMatrix = new MultiFormatWriter().encode(contents, BarcodeFormat.QR_CODE, width, height, hints);
+            MatrixToImageWriter.writeToStream(bitMatrix,DEFUALT_IMAGE_FORMAT,os);
+
 
         } catch (Exception e) {
             e.printStackTrace();

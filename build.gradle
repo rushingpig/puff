@@ -22,6 +22,15 @@ buildscript {
     }
 }
 
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath('se.transmode.gradle:gradle-docker:1.2')
+    }
+}
+
 allprojects{
 
     //定义版本号
@@ -58,6 +67,7 @@ allprojects{
     apply plugin: 'spring-boot'
     apply plugin: 'idea'
     apply plugin: 'propdeps'
+    apply plugin: 'docker'
 
 
     sourceCompatibility = 1.8
@@ -152,6 +162,7 @@ subprojects{
         enabled = false
     }
 }
+apply from: 'gradle/docker.gradle'
 //  fully executable jars
 springBoot {
     executable = true
@@ -178,3 +189,5 @@ task wrapper(type: Wrapper) {
 task listJars(description: 'Display all compile jars.') << {
     configurations.compile.each { File file -> println file.name }
 }
+
+

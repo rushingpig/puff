@@ -23,7 +23,7 @@ public class UserController extends BaseController{
      */
     @GetMapping("index")
     public String userIndex(Model model){
-        return "profile-complete-userinfo";
+        return "user/profile-complete-userinfo";
     }
 
     /**
@@ -32,7 +32,7 @@ public class UserController extends BaseController{
      */
     @GetMapping("deliveryAddresses/index")
     public String deliveryAddressesIndex(){
-        return "profile-address";
+        return "user/profile-address";
     }
 
     /**
@@ -41,7 +41,7 @@ public class UserController extends BaseController{
      */
     @GetMapping("deliveryAddress/add")
     public String deliveryAddressesAdd(){
-        return "profile-add-address";
+        return "user/profile-add-address";
     }
 
     /**
@@ -50,7 +50,7 @@ public class UserController extends BaseController{
      */
     @GetMapping("deliveryAddress/edit")
     public String deliveryAddressEdit(){
-        return "profile-edit-address";
+        return "user/profile-edit-address";
     }
 
     /**
@@ -59,12 +59,12 @@ public class UserController extends BaseController{
      */
     @GetMapping("favorites/index")
     public String favoritesIndex(){
-        return "profile-favourite";
+        return "user/profile-favourite";
     }
 
     @GetMapping("uploadAvatar")
     public String uploadAvatar(){
-        return "profile-avatar";
+        return "user/profile-avatar";
     }
 
 }

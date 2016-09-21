@@ -117,7 +117,6 @@ public class UserServiceImpl extends BaseService implements UserService {
         String realPassword = appUserAuths.getAuthToken();
         String uuid = appUserAuths.getUuid();
         boolean verify = StringUtils.equals(CryptoUtils.MD5(inputPassword),realPassword);
-        logger.info("准备异步记录日志。。。");
         if(verify){
             // 异步记录登录日志
             Future<Integer> result = userLogService.recordLoginLog(loginVo,appUserAuths.getUuid());

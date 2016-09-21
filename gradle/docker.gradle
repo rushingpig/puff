@@ -1,0 +1,27 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
+task buildDocker(type: Docker, dependsOn: build) {
+    push = false
+    applicationName = jar.baseName
+    dockerfile = file('src/main/docker/Dockerfile')
+    doFirst {
+        copy {
+            from "src/main/docker/"
+            into "build/docker/"
+            include "*"
+        }
+        copy {
+            from "build/libs"
+            into "build/docker/"
+            include "*.jar*"
+        }
+    }
+}
+
+task puffDocker(type: Exec,dependsOn: buildDocker){
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine 'cmd', '/c', 'docker', 'build', '-f', 'build/docker/Dockerfile', '-t', 'puff', 'build/docker/'
+    } else {
+        commandLine 'docker', 'build', '-f', 'build/docker/Dockerfile', '-t', 'puff', 'build/docker/'
+    }
+}
